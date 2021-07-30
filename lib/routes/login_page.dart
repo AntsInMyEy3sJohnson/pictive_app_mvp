@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pictive_app_mvp/input_validation/generic_input_validation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pictive_app_mvp/routes/overview_page.dart';
+import 'package:pictive_app_mvp/state/events/user_logged_in.dart';
+import 'package:pictive_app_mvp/state/user_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   static const String ROUTE_ID = "/";
@@ -17,6 +21,13 @@ class _LoginPageState extends State<LoginPage> {
 
   final _formKey = GlobalKey<FormState>();
 
+  late final UserBloc _userBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _userBloc = context.read<UserBloc>();
+  }
 
   @override
   void dispose() {
@@ -73,7 +84,8 @@ class _LoginPageState extends State<LoginPage> {
 
   void _performLogin() {
     if(_formKey.currentState?.validate() ?? false) {
-      // Forward to overview page
+      _userBloc.add(UserLoggedIn(_emailController.text, _passwordController.text));
+      Navigator.pushReplacementNamed(context, OverviewPage.ROUTE_ID);
     }
   }
 
