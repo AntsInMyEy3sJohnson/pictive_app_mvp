@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^7.0.1 # State management
   equatable: ^2.0.0 # Helper to generate equals methods by simply extending 'Equatable'
+  image_picker: ^0.8.2 # For letting the user import images into the app
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
