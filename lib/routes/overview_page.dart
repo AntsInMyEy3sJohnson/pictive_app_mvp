@@ -50,6 +50,7 @@ class _OverviewPageState extends State<OverviewPage> {
             onPressed: _processSelectImagesButtonPressed,
             heroTag: "pickMultiImageFromGalleryFab",
           ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.01),
           FloatingActionButton(
             tooltip: "Take a picture with your phone's camera",
             child: const Icon(Icons.camera_alt),
