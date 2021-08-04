@@ -16,7 +16,6 @@ class OverviewPage extends StatefulWidget {
 }
 
 class _OverviewPageState extends State<OverviewPage> {
-
   final ImagePicker _imagePicker = ImagePicker();
   final List<XFile> _images = [];
 
@@ -63,10 +62,9 @@ class _OverviewPageState extends State<OverviewPage> {
   }
 
   void _processSelectImagesButtonPressed() async {
-
     try {
       final selectedPictures = await _imagePicker.pickMultiImage();
-      if(selectedPictures != null) {
+      if (selectedPictures != null) {
         _addPicturesToList(selectedPictures);
       } else {
         print("Received null list from image picker");
@@ -74,43 +72,36 @@ class _OverviewPageState extends State<OverviewPage> {
     } catch (e) {
       print("Error while attempting to pick images: $e");
     }
-
   }
 
   void _processTakePictureButtonPressed() async {
-
     try {
       final picture = await _imagePicker.pickImage(source: ImageSource.camera);
-      if(picture != null) {
+      if (picture != null) {
         _addPicturesToList([picture]);
       } else {
         print("Received null picture from camera.");
       }
-    } catch(e) {
+    } catch (e) {
       print("An error occurred while attempting to take a picture: $e");
     }
-
   }
 
   void _addPicturesToList(Iterable<XFile> pictures) {
-
     setState(() {
       _images.addAll(pictures.toList());
     });
-
   }
 
   Widget _generateImagePreview() {
-    return GridView.builder(
-        key: UniqueKey(),
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: MediaQuery.of(context).size.width,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemCount: _images.length,
-        itemBuilder: (context, index) {
-          return Image.file(File(_images[index].path));
-        });
+    return GridView.count(
+      crossAxisCount: 3,
+      children: List.generate(_images.length, (index) {
+        return Card(
+          color: Theme.of(context).backgroundColor,
+          child: Image.file(File(_images[index].path)),
+        );
+      }),
+    );
   }
 }
