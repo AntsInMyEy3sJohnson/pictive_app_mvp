@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/state/user_state.dart';
+import 'package:pictive_app_mvp/widgets/collection_tile.dart';
 
 class OverviewPage extends StatefulWidget {
   static const String ROUTE_ID = "/overview";
@@ -37,7 +38,14 @@ class _OverviewPageState extends State<OverviewPage> {
             if (_images.isEmpty) {
               return const Text("No images yet.");
             }
-            return _generateImagePreview();
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return Padding(
+                    padding: EdgeInsets.symmetric(
+                        vertical: MediaQuery.of(context).size.height * 0.005),
+                    child: CollectionTile());
+              },
+            );
           },
         ),
       ),
@@ -81,7 +89,7 @@ class _OverviewPageState extends State<OverviewPage> {
       if (picture != null) {
         _addPicturesToList([picture]);
       } else {
-        print("Received null picture from camera.");
+        print("Received null image from camera.");
       }
     } catch (e) {
       print("An error occurred while attempting to take a picture: $e");
