@@ -22,23 +22,22 @@ class _CollectionTileState extends State<CollectionTile> {
           decoration: BoxDecoration(
             color: Colors.grey,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height * 0.02),
-                child: const Text("My collection"),
+          child: ListTile(
+            leading: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle
               ),
-              ElevatedButton(
-                onPressed: _processExpandPressed,
-                child: Icon(_tileIcon),
-                style: ElevatedButton.styleFrom(
-                  shape: CircleBorder(),
-                ),
+              // TODO Enable user to pick a thumbnail for the collection
+              child: Icon(Icons.image),
+            ),
+            title: const Text("My collection"),
+            trailing: ElevatedButton(
+              onPressed: _processExpandPressed,
+              child: Icon(_tileIcon),
+              style: ElevatedButton.styleFrom(
+                shape: CircleBorder(),
               ),
-            ],
+            ),
           ),
         ),
         if (_expanded)
