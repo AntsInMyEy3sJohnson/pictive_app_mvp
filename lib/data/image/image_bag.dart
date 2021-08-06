@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pictive_app_mvp/data/image.dart';
+import 'package:pictive_app_mvp/data/image/image.dart';
 
 part 'image_bag.g.dart';
 

@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pictive_app_mvp/data/collection.dart';
-import 'package:pictive_app_mvp/data/scored_label.dart';
-import 'package:pictive_app_mvp/data/user.dart';
+import 'package:pictive_app_mvp/data/collection/collection.dart';
+import 'package:pictive_app_mvp/data/image/scored_label.dart';
+import 'package:pictive_app_mvp/data/user/user.dart';
 
 part 'image.g.dart';
 

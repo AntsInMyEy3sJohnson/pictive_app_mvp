@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pictive_app_mvp/data/collection.dart';
+import 'package:pictive_app_mvp/data/collection/collection.dart';
 
 part 'collection_bag.g.dart';
 
