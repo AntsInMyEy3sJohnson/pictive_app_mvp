@@ -36,9 +36,6 @@ class _OverviewPageState extends State<OverviewPage> {
       body: Center(
         child: BlocBuilder<UserBloc, UserState>(
           builder: (context, state) {
-            if (_images.isEmpty) {
-              return const Text("No images yet.");
-            }
             List<Collection> collectionsToDisplay = state.user.sharedCollections!;
             return ListView.builder(
               itemCount: collectionsToDisplay.length,

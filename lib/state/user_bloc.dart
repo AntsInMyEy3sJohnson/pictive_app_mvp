@@ -34,7 +34,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       return UserState(User());
     }
 
-    final UserBag userBag = queryResult.data!["createUserWithDefaultCollection"];
+    final UserBag userBag = UserBag.fromJson(queryResult.data!["createUserWithDefaultCollection"]);
 
     return UserState(userBag.users![0]);
 

@@ -11,6 +11,8 @@ class RegistrationPage extends StatefulWidget {
 
   static const String ROUTE_ID = "/register";
 
+  const RegistrationPage();
+
   @override
   _RegistrationPageState createState() => _RegistrationPageState();
 }
