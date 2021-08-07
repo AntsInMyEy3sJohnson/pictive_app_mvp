@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/state/user_state.dart';
 import 'package:pictive_app_mvp/widgets/collection_tile.dart';
@@ -29,7 +30,7 @@ class _OverviewPageState extends State<OverviewPage> {
           // Disable this button if no pictures are currently present
           IconButton(
               icon: Icon(Icons.filter_alt_outlined),
-              onPressed: () => print("I was pressed"))
+              onPressed: () => print("Filter button pressed"))
         ],
       ),
       body: Center(
@@ -38,19 +39,20 @@ class _OverviewPageState extends State<OverviewPage> {
             if (_images.isEmpty) {
               return const Text("No images yet.");
             }
+            List<Collection> collectionsToDisplay = state.user.sharedCollections!;
             return ListView.builder(
+              itemCount: collectionsToDisplay.length,
               itemBuilder: (context, index) {
                 return Padding(
                     padding: EdgeInsets.symmetric(
                         vertical: MediaQuery.of(context).size.height * 0.005),
-                    child: CollectionTile());
+                    child: CollectionTile(collectionsToDisplay[index].displayName!));
               },
             );
           },
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      // TODO Move FAB functionality to buttons located on each collection tile
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

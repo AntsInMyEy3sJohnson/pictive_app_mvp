@@ -1,22 +1,16 @@
 import 'package:equatable/equatable.dart';
+import 'package:pictive_app_mvp/data/user/user.dart';
 
 class UserState extends Equatable {
 
-  static const String _PLACEHOLDER = "N/A";
+  final User user;
 
-  final String email;
-  final String password;
-
-  const UserState(this.email, this.password);
+  const UserState(this.user);
 
   factory UserState.dummyState() {
-    return UserState(_PLACEHOLDER, _PLACEHOLDER);
+    return UserState(User());
   }
 
   @override
-  List<Object?> get props => [
-    email,
-    password
-  ];
-
+  List<Object?> get props => [user];
 }

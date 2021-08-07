@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CollectionTile extends StatefulWidget {
-  const CollectionTile();
+
+  final String collectionName;
+
+  const CollectionTile(this.collectionName);
 
   @override
   _CollectionTileState createState() => _CollectionTileState();
@@ -30,7 +33,7 @@ class _CollectionTileState extends State<CollectionTile> {
               // TODO Enable user to pick a thumbnail for the collection
               child: Icon(Icons.image),
             ),
-            title: const Text("My collection"),
+            title: Text(widget.collectionName),
             trailing: ElevatedButton(
               onPressed: _processExpandPressed,
               child: Icon(_tileIcon),
