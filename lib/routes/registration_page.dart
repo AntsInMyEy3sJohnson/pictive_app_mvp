@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pictive_app_mvp/input_validation/generic_input_validation.dart';
-import 'package:pictive_app_mvp/routes/overview_page.dart';
-import 'package:pictive_app_mvp/state/events/user_registered.dart';
-import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pictive_app_mvp/widgets/login_register_body.dart';
+import 'package:pictive_app_mvp/input_validation/generic_input_validation.dart';
+import 'package:pictive_app_mvp/state/user_bloc.dart';
+import 'package:pictive_app_mvp/widgets/mutations/register_user.dart';
 import 'package:pictive_app_mvp/widgets/relative_vertical_sized_box.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -45,55 +43,61 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: LoginRegisterBody(
-          _formKey,
-          <Widget>[
-            // TODO Put this into dedicated widget to avoid code duplication
-            TextFormField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                hintText: "Mail",
-                border: OutlineInputBorder()
+      body: SizedBox.expand(
+        child: FractionallySizedBox(
+          widthFactor: 0.8,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                          hintText: "Mail",
+                          border: OutlineInputBorder()
+                      ),
+                      validator: _validateMail,
+                    ),
+                    const RelativeVerticalSizedBox(),
+                    TextFormField(
+                      controller: _passwordController,
+                      keyboardType: TextInputType.text,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: "Password",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: _validatePassword,
+                    ),
+                    const RelativeVerticalSizedBox(),
+                    TextFormField(
+                      controller: _passwordRepetitionController,
+                      keyboardType: TextInputType.text,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: "Repeat password",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: _validatePasswordRepetition,
+                    ),
+                  ],
+                ),
               ),
-              validator: _validateMail,
-            ),
-            const RelativeVerticalSizedBox(),
-            TextFormField(
-              controller: _passwordController,
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: "Password",
-                border: OutlineInputBorder(),
-              ),
-              validator: _validatePassword,
-            ),
-            const RelativeVerticalSizedBox(),
-            TextFormField(
-              controller: _passwordRepetitionController,
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: "Repeat password",
-                border: OutlineInputBorder(),
-              ),
-              validator: _validatePasswordRepetition,
-            ),
-          ],
-          "Register",
-          _performRegistration,
+              RegisterUser(_userBloc, _emailController, _passwordController, _inputValid),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  void _performRegistration() {
-    if (_formKey.currentState?.validate() ?? false) {
-      _userBloc.add(UserRegistered(_emailController.text, _passwordController.text));
-      Navigator.pushReplacementNamed(context, OverviewPage.ROUTE_ID);
-    }
+  bool _inputValid() {
+    return _formKey.currentState?.validate() ?? false;
   }
 
   String? _validateMail(String? mail) {

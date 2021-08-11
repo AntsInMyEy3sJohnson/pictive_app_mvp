@@ -70,8 +70,10 @@ class _LoginPageState extends State<LoginPage> {
                   validator: _validatePassword,
                 ),
               ],
-              "Login",
-              _performLogin,
+              ElevatedButton(
+                child: const Text("Login"),
+                onPressed: _performLogin,
+              ),
             ),
             const RelativeVerticalSizedBox(multiplier: 0.03),
             const Text("Don't have an account yet?"),

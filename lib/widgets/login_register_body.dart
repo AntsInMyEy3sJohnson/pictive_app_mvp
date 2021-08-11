@@ -4,10 +4,9 @@ class LoginRegisterBody extends StatelessWidget {
 
   final GlobalKey<FormState> formKey;
   final List<Widget> inputElements;
-  final String submitText;
-  final Function submitCallback;
+  final Widget submitWidget;
 
-  const LoginRegisterBody(this.formKey, this.inputElements, this.submitText, this.submitCallback);
+  const LoginRegisterBody(this.formKey, this.inputElements, this.submitWidget);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +24,7 @@ class LoginRegisterBody extends StatelessWidget {
             ),
           ),
         ),
-        ElevatedButton(onPressed: () => submitCallback(), child: Text(submitText))
+        submitWidget,
       ],
     );
   }
