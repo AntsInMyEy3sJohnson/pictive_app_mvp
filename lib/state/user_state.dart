@@ -11,6 +11,10 @@ class UserState extends Equatable {
     return UserState(User());
   }
 
+  factory UserState.copyWithUser(User user) {
+    return UserState(user);
+  }
+
   @override
   List<Object?> get props => [user];
 }

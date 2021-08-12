@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
 import 'package:pictive_app_mvp/data/user/user_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
+import 'package:pictive_app_mvp/state/events/user_registered.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
 import 'package:pictive_app_mvp/widgets/sized_button_child.dart';
@@ -64,6 +65,6 @@ class _RegisterUserState extends State<RegisterUser> {
   void _onRegistrationComplete(QueryResult queryResult) {
     final UserBag userBag = UserBag.fromJson(
         queryResult.data!["createUserWithDefaultCollection"]);
-    // TODO Do something useful with the result
+    widget.userBloc.add(UserRegistered(userBag.users![0]));
   }
 }

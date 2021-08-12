@@ -21,8 +21,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   Future<UserState> _mapUserRegisteredToUserState(
       UserRegistered userRegistered) async {
 
-    // TODO Implement me
-    return UserState(User());
+    return UserState.copyWithUser(userRegistered.user);
 
   }
 
