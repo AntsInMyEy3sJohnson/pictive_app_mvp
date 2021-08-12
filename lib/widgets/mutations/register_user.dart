@@ -63,7 +63,7 @@ class _RegisterUserState extends State<RegisterUser> {
 
   void _onRegistrationComplete(QueryResult queryResult) {
     final UserBag userBag = UserBag.fromJson(
-        queryResult.data!["createUserWithDefaultCollection"]["users"][0]);
+        queryResult.data!["createUserWithDefaultCollection"]);
     // TODO Do something useful with the result
   }
 }
