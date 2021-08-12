@@ -4,6 +4,7 @@ import 'package:pictive_app_mvp/data/user/user_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
+import 'package:pictive_app_mvp/widgets/sized_button_child.dart';
 
 class RegisterUser extends StatefulWidget {
   final UserBloc userBloc;
@@ -29,15 +30,19 @@ class _RegisterUserState extends State<RegisterUser> {
         future: _resultFuture,
         initialData: QueryResult.unexecuted,
         builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
-          if(snapshot.connectionState == ConnectionState.none && snapshot.data == QueryResult.unexecuted) {
-            return const Text("Register");
+          if (snapshot.connectionState == ConnectionState.none &&
+              snapshot.data == QueryResult.unexecuted) {
+            return const SizedButtonChild(Text("Register"));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CenteredCircularProgressIndicator();
+            return const SizedButtonChild(CenteredCircularProgressIndicator());
           } else if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               _onRegistrationComplete(snapshot.data!);
-              return Icon(Icons.check, color: Colors.white);
+              return SizedButtonChild(Icon(
+                Icons.check,
+                color: Colors.white,
+              ));
             }
           }
           return const Text("Please try again later.");
@@ -57,7 +62,8 @@ class _RegisterUserState extends State<RegisterUser> {
   }
 
   void _onRegistrationComplete(QueryResult queryResult) {
-    final UserBag userBag = UserBag.fromJson(queryResult.data!["createUserWithDefaultCollection"]["users"][0]);
+    final UserBag userBag = UserBag.fromJson(
+        queryResult.data!["createUserWithDefaultCollection"]["users"][0]);
     // TODO Do something useful with the result
   }
 }

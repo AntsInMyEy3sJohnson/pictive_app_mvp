@@ -10,22 +10,22 @@ class LoginRegisterBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        FractionallySizedBox(
-          widthFactor: 0.8,
-          child: Form(
+    return FractionallySizedBox(
+      widthFactor: 0.8,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Form(
             key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: inputElements,
             ),
           ),
-        ),
-        submitWidget,
-      ],
+          submitWidget,
+        ],
+      ),
     );
   }
 
