@@ -16,11 +16,9 @@ Image _$ImageFromJson(Map<String, dynamic> json) {
         .toList()
     ..containedInCollections =
         (json['containedInCollections'] as List<dynamic>?)
-            ?.map((e) => Collection.fromJson(e as Map<String, dynamic>))
+            ?.map((e) => e as String)
             .toList()
-    ..owner = json['owner'] == null
-        ? null
-        : User.fromJson(json['owner'] as Map<String, dynamic>);
+    ..owner = json['owner'] as String?;
 }
 
 Map<String, dynamic> _$ImageToJson(Image instance) => <String, dynamic>{

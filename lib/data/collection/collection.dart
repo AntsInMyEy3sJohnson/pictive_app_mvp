@@ -1,6 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pictive_app_mvp/data/image/image.dart';
-import 'package:pictive_app_mvp/data/user/user.dart';
 
 part 'collection.g.dart';
 
@@ -9,9 +7,9 @@ class Collection {
 
   String? id;
   bool? defaultCollection;
-  List<Image>? images;
-  List<User>? sharedWith;
-  User? owner;
+  List<String>? images;
+  List<String>? sharedWith;
+  String? owner;
   String? displayName;
   int? pin;
   bool? nonOwnersCanShare;

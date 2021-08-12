@@ -14,11 +14,9 @@ class MutationProvider {
           }
           sharedCollections {
             id
-            displayName
           }
           defaultCollection {
             id
-            displayName
           }
           ownedImages {
             id

@@ -36,14 +36,13 @@ class _OverviewPageState extends State<OverviewPage> {
       body: Center(
         child: BlocBuilder<UserBloc, UserState>(
           builder: (context, state) {
-            List<Collection> collectionsToDisplay = state.user.sharedCollections!;
             return ListView.builder(
-              itemCount: collectionsToDisplay.length,
+              itemCount: 10,
               itemBuilder: (context, index) {
                 return Padding(
                     padding: EdgeInsets.symmetric(
                         vertical: MediaQuery.of(context).size.height * 0.005),
-                    child: CollectionTile(collectionsToDisplay[index].displayName!));
+                    child: CollectionTile("Collection tile $index"));
               },
             );
           },

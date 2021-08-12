@@ -11,16 +11,14 @@ User _$UserFromJson(Map<String, dynamic> json) {
     ..id = json['id'] as String?
     ..mail = json['mail'] as String?
     ..ownedCollections = (json['ownedCollections'] as List<dynamic>?)
-        ?.map((e) => Collection.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => e as String)
         .toList()
     ..sharedCollections = (json['sharedCollections'] as List<dynamic>?)
-        ?.map((e) => Collection.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => e as String)
         .toList()
-    ..defaultCollection = json['defaultCollection'] == null
-        ? null
-        : Collection.fromJson(json['defaultCollection'] as Map<String, dynamic>)
+    ..defaultCollection = json['defaultCollection'] as String?
     ..ownedImages = (json['ownedImages'] as List<dynamic>?)
-        ?.map((e) => Image.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => e as String)
         .toList();
 }
 
