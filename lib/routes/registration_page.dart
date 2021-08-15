@@ -1,18 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graphql/client.dart';
-import 'package:pictive_app_mvp/data/user/user_bag.dart';
-import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/input_validation/generic_input_validation.dart';
-import 'package:pictive_app_mvp/state/events/user_registered.dart';
-import 'package:pictive_app_mvp/state/user_bloc.dart';
-import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
 import 'package:pictive_app_mvp/widgets/login_register_body.dart';
 import 'package:pictive_app_mvp/widgets/mutations/register_user.dart';
 import 'package:pictive_app_mvp/widgets/relative_vertical_sized_box.dart';
-import 'package:pictive_app_mvp/widgets/sized_button_child.dart';
-
-import 'overview_page.dart';
 
 class RegistrationPage extends StatefulWidget {
   static const String ROUTE_ID = "/register";
@@ -31,7 +21,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<QueryResult>? _resultFuture;
+  bool _registrationTriggered = false;
 
   @override
   void dispose() {
@@ -81,10 +71,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   validator: _validatePasswordRepetition,
                 ),
               ],
-              ElevatedButton(
-                onPressed: _onRegistrationTriggered,
-                child: RegisterUser(_resultFuture),
-              ),
+              _registrationTriggered
+                  ? ElevatedButton(
+                      onPressed: null,
+                      child: RegisterUser(
+                        _emailController.text,
+                        _passwordController.text,
+                      ),
+                    )
+                  : ElevatedButton(
+                      onPressed: _onRegistrationTriggered,
+                      child: const Text("Register")),
             ),
           ],
         ),
@@ -95,8 +92,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   void _onRegistrationTriggered() {
     if (_inputValid()) {
       setState(() {
-        _resultFuture = GClientWrapper.getInstance()
-            .performCreateUser(_emailController.text, _passwordController.text);
+        _registrationTriggered = true;
       });
     }
   }
