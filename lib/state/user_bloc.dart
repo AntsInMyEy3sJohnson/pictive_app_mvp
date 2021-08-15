@@ -4,7 +4,6 @@ import 'package:pictive_app_mvp/data/user/user.dart';
 import 'package:pictive_app_mvp/state/events/collection_retrieved.dart';
 import 'package:pictive_app_mvp/state/events/user_event.dart';
 import 'package:pictive_app_mvp/state/events/user_logged_in.dart';
-import 'package:pictive_app_mvp/state/events/user_registered.dart';
 
 class UserBloc extends Bloc<UserEvent, User> {
 
@@ -12,9 +11,7 @@ class UserBloc extends Bloc<UserEvent, User> {
 
   @override
   Stream<User> mapEventToState(UserEvent event) async* {
-    if (event is UserRegistered) {
-      yield await _mapUserRegisteredToUserState(event);
-    } else if (event is UserLoggedIn) {
+     if (event is UserLoggedIn) {
       yield await _mapUserLoggedInToUserState(event);
     } else if (event is CollectionRetrieved) {
       yield await _mapCollectionRetrievedToUserState(event);
@@ -44,16 +41,8 @@ class UserBloc extends Bloc<UserEvent, User> {
 
   }
 
-  Future<User> _mapUserRegisteredToUserState(
-      UserRegistered userRegistered) async {
-
-    return userRegistered.user;
-
-  }
-
   Future<User> _mapUserLoggedInToUserState(
       UserLoggedIn userLoggedIn) async {
-    // TODO Implement me
-    return User();
+    return userLoggedIn.user;
   }
 }

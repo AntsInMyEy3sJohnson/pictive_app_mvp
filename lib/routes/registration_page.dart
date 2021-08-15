@@ -90,15 +90,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   void _onRegistrationTriggered() {
-    if (_inputValid()) {
+    if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         _registrationTriggered = true;
       });
     }
-  }
-
-  bool _inputValid() {
-    return _formKey.currentState?.validate() ?? false;
   }
 
   String? _validateMail(String? mail) {

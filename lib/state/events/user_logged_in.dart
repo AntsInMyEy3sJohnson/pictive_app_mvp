@@ -1,13 +1,13 @@
+import 'package:pictive_app_mvp/data/user/user.dart';
 import 'package:pictive_app_mvp/state/events/user_event.dart';
 
 class UserLoggedIn extends UserEvent {
 
-  final String email;
-  final String password;
+  final User user;
 
-  const UserLoggedIn(this.email, this.password);
+  const UserLoggedIn(this.user);
 
   @override
-  List<Object?> get props => [email, password];
+  List<Object?> get props => [user];
 
 }

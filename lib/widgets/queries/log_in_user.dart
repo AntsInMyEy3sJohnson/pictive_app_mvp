@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
+import 'package:pictive_app_mvp/data/user/user_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
-import 'package:pictive_app_mvp/routes/login_page.dart';
+import 'package:pictive_app_mvp/routes/overview_page.dart';
+import 'package:pictive_app_mvp/state/events/user_logged_in.dart';
+import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
 import 'package:pictive_app_mvp/widgets/sized_button_child.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class RegisterUser extends StatefulWidget {
+class LogInUser extends StatefulWidget {
   final String email;
-  final String password;
 
-  const RegisterUser(this.email, this.password);
+  const LogInUser(this.email);
 
   @override
-  _RegisterUserState createState() => _RegisterUserState();
+  _LogInUserState createState() => _LogInUserState();
 }
 
-class _RegisterUserState extends State<RegisterUser> {
+class _LogInUserState extends State<LogInUser> {
   late final Future<QueryResult> _resultFuture;
+  late final UserBloc _userBloc;
 
   @override
   void initState() {
     super.initState();
-    _resultFuture = GClientWrapper.getInstance()
-        .performCreateUser(widget.email, widget.password);
+    _resultFuture =
+        GClientWrapper.getInstance().performGetUserByMail(widget.email);
+    _userBloc = context.read<UserBloc>();
   }
 
   @override
@@ -36,7 +41,7 @@ class _RegisterUserState extends State<RegisterUser> {
         } else if (snapshot.connectionState == ConnectionState.done &&
             snapshot.hasData) {
           Future.delayed(Duration(milliseconds: 200),
-              () => _onRegistrationComplete(snapshot.data!));
+              () => _onLoginComplete(snapshot.data!));
           return SizedButtonChild(
             Icon(
               Icons.check,
@@ -49,21 +54,10 @@ class _RegisterUserState extends State<RegisterUser> {
     );
   }
 
-  void _onRegistrationComplete(QueryResult queryResult) async {
-    await showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Success!"),
-        content: const Text(
-            "Registration successful. You can now log in with your email address and password."),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Got it!")),
-        ],
-      ),
-    );
-    Navigator.pushReplacementNamed(context, LoginPage.ROUTE_ID);
+  void _onLoginComplete(QueryResult queryResult) async {
+    final UserBag userBag =
+        UserBag.fromJson(queryResult.data!["getUserByMail"]);
+    _userBloc.add(UserLoggedIn(userBag.users![0]));
+    Navigator.pushReplacementNamed(context, OverviewPage.ROUTE_ID);
   }
 }

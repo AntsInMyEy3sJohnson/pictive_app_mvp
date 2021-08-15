@@ -17,6 +17,15 @@ class GClientWrapper {
     return _theInstance;
   }
 
+  Future<QueryResult> performGetUserByMail(String mail) async {
+    final QueryOptions queryOptions = QueryOptions(
+      document: gql(QueryProvider.getUserByMailQuery()),
+      variables: <String, dynamic>{'mail': mail}
+    );
+    return _graphQLClient.query(queryOptions);
+
+  }
+
   Future<QueryResult> performGetCollectionByID(String id) async {
     final QueryOptions queryOptions = QueryOptions(
         document: gql(QueryProvider.getCollectionByIdQuery()),
