@@ -2,7 +2,7 @@ class MutationProvider {
 
   MutationProvider._();
 
-  static String getCreateUserMutation() {
+  static String createUserMutation() {
     return r'''
     mutation CreateUserWithDefaultCollection($mail: String!, $password: String!) {
       createUserWithDefaultCollection(mail: $mail, password: $password) {

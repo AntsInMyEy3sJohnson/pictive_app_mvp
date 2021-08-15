@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pictive_app_mvp/data/user/user.dart';
 import 'package:pictive_app_mvp/routes.dart';
 import 'package:pictive_app_mvp/routes/login_page.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
-import 'package:pictive_app_mvp/state/user_state.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<UserBloc>(
-      create: (_) => UserBloc(UserState.dummyState()),
+      create: (_) => UserBloc(User()),
       child: MaterialApp(
         theme: Theme.of(context).copyWith(
           primaryColor: const Color(0xffe040fb),

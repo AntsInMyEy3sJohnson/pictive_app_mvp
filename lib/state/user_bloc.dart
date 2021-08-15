@@ -1,33 +1,59 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/user/user.dart';
+import 'package:pictive_app_mvp/state/events/collection_retrieved.dart';
 import 'package:pictive_app_mvp/state/events/user_event.dart';
 import 'package:pictive_app_mvp/state/events/user_logged_in.dart';
 import 'package:pictive_app_mvp/state/events/user_registered.dart';
-import 'package:pictive_app_mvp/state/user_state.dart';
 
-class UserBloc extends Bloc<UserEvent, UserState> {
+class UserBloc extends Bloc<UserEvent, User> {
 
-  UserBloc(UserState initialState) : super(initialState);
+  UserBloc(User initialState) : super(initialState);
 
   @override
-  Stream<UserState> mapEventToState(UserEvent event) async* {
+  Stream<User> mapEventToState(UserEvent event) async* {
     if (event is UserRegistered) {
       yield await _mapUserRegisteredToUserState(event);
     } else if (event is UserLoggedIn) {
       yield await _mapUserLoggedInToUserState(event);
+    } else if (event is CollectionRetrieved) {
+      yield await _mapCollectionRetrievedToUserState(event);
     }
   }
 
-  Future<UserState> _mapUserRegisteredToUserState(
-      UserRegistered userRegistered) async {
+  Future<User> _mapCollectionRetrievedToUserState(CollectionRetrieved collectionRetrieved) async {
+    final Collection collection = collectionRetrieved.collection;
+    final List<Collection> ownedCollections = List.from(state.ownedCollections ?? []);
+    final List<Collection> sharedCollections = List.from(state.sharedCollections ?? []);
 
-    return UserState.copyWithUser(userRegistered.user);
+    sharedCollections.removeWhere((element) => element == collection);
+    sharedCollections.add(collection);
+
+    if (collection.owner == state) {
+      ownedCollections.removeWhere((element) => element == collection);
+      ownedCollections.add(collection);
+    }
+
+    return User()
+        ..id = state.id
+        ..mail = state.mail
+        ..ownedCollections = ownedCollections
+        ..sharedCollections = sharedCollections
+        ..defaultCollection = state.defaultCollection
+        ..ownedImages = state.ownedImages;
 
   }
 
-  Future<UserState> _mapUserLoggedInToUserState(
+  Future<User> _mapUserRegisteredToUserState(
+      UserRegistered userRegistered) async {
+
+    return userRegistered.user;
+
+  }
+
+  Future<User> _mapUserLoggedInToUserState(
       UserLoggedIn userLoggedIn) async {
     // TODO Implement me
-    return UserState(User());
+    return User();
   }
 }

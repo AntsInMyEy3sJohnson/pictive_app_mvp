@@ -1,15 +1,17 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:pictive_app_mvp/data/image/image.dart';
+import 'package:pictive_app_mvp/data/user/user.dart';
 
 part 'collection.g.dart';
 
 @JsonSerializable()
-class Collection {
-
+class Collection extends Equatable {
   String? id;
   bool? defaultCollection;
-  List<String>? images;
-  List<String>? sharedWith;
-  String? owner;
+  List<Image>? images;
+  List<User>? sharedWith;
+  User? owner;
   String? displayName;
   int? pin;
   bool? nonOwnersCanShare;
@@ -17,8 +19,11 @@ class Collection {
 
   Collection();
 
-  factory Collection.fromJson(Map<String, dynamic> json) => _$CollectionFromJson(json);
+  factory Collection.fromJson(Map<String, dynamic> json) =>
+      _$CollectionFromJson(json);
 
   Map<String, dynamic> toJson() => _$CollectionToJson(this);
 
+  @override
+  List<Object?> get props => [id];
 }

@@ -2,18 +2,25 @@ class QueryProvider {
 
   QueryProvider._();
 
-
-
-  static String getCollectionDisplayNamesQuery() {
+  static String getCollectionByIdQuery() {
     return r'''
-      query {
-        getCollections{
-          collections{
-            displayName
+    query GetCollectionByID($id: ID!) {
+      getCollectionByID(id: $id) {
+        collections {
+          id
+          displayName
+          images {
+            id
+          }
+          owner {
+            id
           }
         }
       }
+    }
     ''';
+
   }
+
 
 }

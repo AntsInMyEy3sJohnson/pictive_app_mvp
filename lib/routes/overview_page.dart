@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pictive_app_mvp/data/collection/collection.dart';
+import 'package:pictive_app_mvp/data/user/user.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
-import 'package:pictive_app_mvp/state/user_state.dart';
-import 'package:pictive_app_mvp/widgets/collection_tile.dart';
+import 'package:pictive_app_mvp/widgets/queries/populate_collection.dart';
 
 class OverviewPage extends StatefulWidget {
   static const String ROUTE_ID = "/overview";
@@ -34,16 +34,12 @@ class _OverviewPageState extends State<OverviewPage> {
         ],
       ),
       body: Center(
-        child: BlocBuilder<UserBloc, UserState>(
+        child: BlocBuilder<UserBloc, User>(
           builder: (context, state) {
+            final List<Collection> sharedCollectionIDs = state.sharedCollections!;
             return ListView.builder(
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return Padding(
-                    padding: EdgeInsets.symmetric(
-                        vertical: MediaQuery.of(context).size.height * 0.005),
-                    child: CollectionTile("Collection tile $index"));
-              },
+              itemCount: sharedCollectionIDs.length,
+              itemBuilder: (context, index) => PopulateCollection(sharedCollectionIDs[index].id!)
             );
           },
         ),
