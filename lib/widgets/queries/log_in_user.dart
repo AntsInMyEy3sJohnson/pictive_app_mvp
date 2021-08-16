@@ -58,6 +58,8 @@ class _LogInUserState extends State<LogInUser> {
     final UserBag userBag =
         UserBag.fromJson(queryResult.data!["getUserByMail"]);
     _userBloc.add(UserLoggedIn(userBag.users![0]));
+    // TODO Pass this as callback into widget -- currently, there
+    //  is still a back arrow displayed on the Overview page
     Navigator.pushReplacementNamed(context, OverviewPage.ROUTE_ID);
   }
 }

@@ -14,6 +14,7 @@ class QueryProvider {
           }
           sharedCollections {
             id
+            defaultCollection
           }
           defaultCollection {
             id
@@ -37,6 +38,7 @@ class QueryProvider {
           displayName
           images {
             id
+            preview
           }
           owner {
             id

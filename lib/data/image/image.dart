@@ -9,6 +9,7 @@ part 'image.g.dart';
 class Image {
   String? id;
   String? payload;
+  String? preview;
   String? extractedText;
   List<ScoredLabel>? scoredLabels;
   List<Collection>? containedInCollections;

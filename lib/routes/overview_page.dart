@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,10 +34,13 @@ class _OverviewPageState extends State<OverviewPage> {
       body: Center(
         child: BlocBuilder<UserBloc, User>(
           builder: (context, state) {
-            final List<Collection> sharedCollectionIDs = state.sharedCollections!;
+            final List<Collection> sharedCollections = state.sharedCollections!;
             return ListView.builder(
-              itemCount: sharedCollectionIDs.length,
-              itemBuilder: (context, index) => PopulateCollection(sharedCollectionIDs[index].id!)
+              itemCount: sharedCollections.length,
+              itemBuilder: (context, index) => PopulateCollection(
+                sharedCollections[index].id!,
+                expandedByDefault: sharedCollections[index].defaultCollection!,
+              ),
             );
           },
         ),
@@ -96,17 +97,5 @@ class _OverviewPageState extends State<OverviewPage> {
     setState(() {
       _images.addAll(pictures.toList());
     });
-  }
-
-  Widget _generateImagePreview() {
-    return GridView.count(
-      crossAxisCount: 3,
-      children: List.generate(_images.length, (index) {
-        return Card(
-          color: Theme.of(context).backgroundColor,
-          child: Image.file(File(_images[index].path)),
-        );
-      }),
-    );
   }
 }
