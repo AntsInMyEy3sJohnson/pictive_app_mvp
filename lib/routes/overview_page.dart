@@ -1,5 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image/image.dart' as imagelib;
 import 'package:image_picker/image_picker.dart';
 import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/user/user.dart';
@@ -69,9 +71,8 @@ class _OverviewPageState extends State<OverviewPage> {
 
   void _processSelectImagesButtonPressed() async {
     try {
-      final selectedPictures = await _imagePicker.pickMultiImage();
-      if (selectedPictures != null) {
-        _addPicturesToList(selectedPictures);
+      final List<XFile>? selectedImages = await _imagePicker.pickMultiImage();
+      if (selectedImages != null) {
       } else {
         print("Received null list from image picker");
       }
@@ -82,9 +83,10 @@ class _OverviewPageState extends State<OverviewPage> {
 
   void _processTakePictureButtonPressed() async {
     try {
-      final picture = await _imagePicker.pickImage(source: ImageSource.camera);
-      if (picture != null) {
-        _addPicturesToList([picture]);
+      final XFile? xfile = await _imagePicker.pickImage(source: ImageSource.camera);
+      if (xfile != null) {
+        final imagelib.Image? image = imagelib.decodeImage(await xfile.readAsBytes());
+        _addPicturesToList([xfile]);
       } else {
         print("Received null image from camera.");
       }

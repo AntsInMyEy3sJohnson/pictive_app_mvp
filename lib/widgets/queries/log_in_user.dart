@@ -62,4 +62,5 @@ class _LogInUserState extends State<LogInUser> {
     //  is still a back arrow displayed on the Overview page
     Navigator.pushReplacementNamed(context, OverviewPage.ROUTE_ID);
   }
+
 }

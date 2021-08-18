@@ -38,7 +38,6 @@ class QueryProvider {
           displayName
           images {
             id
-            preview
           }
           owner {
             id

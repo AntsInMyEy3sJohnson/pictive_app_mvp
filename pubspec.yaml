@@ -30,6 +30,7 @@ dependencies:
   json_serializable: ^4.1.4 # Necessary for working with JSON data sent over the wire
   build_runner: ^2.1.0 # Creates '.g.dart' files from domain model classes
   graphql: ^5.0.0 # GraphQL client ('graphql_flutter' caused problems, so going back to plain GraphQL client)
+  image: ^3.0.2 # Manipulate images
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
