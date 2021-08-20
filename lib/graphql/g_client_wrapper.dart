@@ -1,6 +1,5 @@
+
 import 'package:graphql/client.dart';
-import 'package:pictive_app_mvp/graphql/mutation_provider.dart';
-import 'package:pictive_app_mvp/graphql/query_provider.dart';
 
 class GClientWrapper {
   static final GClientWrapper _theInstance = GClientWrapper._();
@@ -17,27 +16,21 @@ class GClientWrapper {
     return _theInstance;
   }
 
-  Future<QueryResult> performGetUserByMail(String mail) async {
+  Future<QueryResult> performQuery(
+      String query, Map<String, dynamic> variables) async {
     final QueryOptions queryOptions = QueryOptions(
-      document: gql(QueryProvider.getUserByMailQuery()),
-      variables: <String, dynamic>{'mail': mail}
+      document: gql(query),
+      variables: variables,
     );
     return _graphQLClient.query(queryOptions);
-
   }
 
-  Future<QueryResult> performGetCollectionByID(String id) async {
-    final QueryOptions queryOptions = QueryOptions(
-        document: gql(QueryProvider.getCollectionByIdQuery()),
-        variables: <String, dynamic>{'id': id});
-    return _graphQLClient.query(queryOptions);
-  }
-
-  Future<QueryResult> performCreateUser(String mail, String password) async {
-    final MutationOptions mutationOptions = MutationOptions(
-        document: gql(MutationProvider.createUserMutation()),
-        variables: <String, dynamic>{'mail': mail, 'password': password});
+  Future<QueryResult> performMutation(
+      String mutation, Map<String, dynamic> variables) async {
+    final MutationOptions mutationOptions =
+        MutationOptions(document: gql(mutation), variables: variables);
 
     return _graphQLClient.mutate(mutationOptions);
   }
+
 }

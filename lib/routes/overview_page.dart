@@ -1,3 +1,4 @@
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:image/image.dart' as imagelib;
 import 'package:image_picker/image_picker.dart';
 import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/user/user.dart';
+import 'package:pictive_app_mvp/state/events/images_added.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/queries/populate_collection.dart';
 
@@ -19,7 +21,14 @@ class OverviewPage extends StatefulWidget {
 
 class _OverviewPageState extends State<OverviewPage> {
   final ImagePicker _imagePicker = ImagePicker();
-  final List<XFile> _images = [];
+
+  late final UserBloc _userBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _userBloc = context.read<UserBloc>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,21 +92,22 @@ class _OverviewPageState extends State<OverviewPage> {
 
   void _processTakePictureButtonPressed() async {
     try {
-      final XFile? xfile = await _imagePicker.pickImage(source: ImageSource.camera);
+      final XFile? xfile =
+          await _imagePicker.pickImage(source: ImageSource.camera);
       if (xfile != null) {
-        final imagelib.Image? image = imagelib.decodeImage(await xfile.readAsBytes());
-        _addPicturesToList([xfile]);
+        final imagelib.Image? image =
+            imagelib.decodeImage(await xfile.readAsBytes());
+        if (image != null) {
+          final List<int> pngInts = imagelib.encodePng(image);
+          final String base64Payload = base64.encode(pngInts);
+          _userBloc.add(ImagesAdded(
+              _userBloc.state.defaultCollection!.id!, [base64Payload]));
+        }
       } else {
         print("Received null image from camera.");
       }
     } catch (e) {
       print("An error occurred while attempting to take a picture: $e");
     }
-  }
-
-  void _addPicturesToList(Iterable<XFile> pictures) {
-    setState(() {
-      _images.addAll(pictures.toList());
-    });
   }
 }

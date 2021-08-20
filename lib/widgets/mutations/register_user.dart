@@ -16,19 +16,43 @@ class RegisterUser extends StatefulWidget {
 }
 
 class _RegisterUserState extends State<RegisterUser> {
-  late final Future<QueryResult> _resultFuture;
+  static const String _CREATE_USER_MUTATION = r'''
+    mutation CreateUserWithDefaultCollection($mail: String!, $password: String!) {
+      createUserWithDefaultCollection(mail: $mail, password: $password) {
+        users {
+          id
+          mail
+          ownedCollections {
+            id
+          }
+          sharedCollections {
+            id
+          }
+          defaultCollection {
+            id
+          }
+          ownedImages {
+            id
+          }
+        }
+      }
+    }
+    ''';
+
+  late final Future<QueryResult> _createUserFuture;
 
   @override
   void initState() {
     super.initState();
-    _resultFuture = GClientWrapper.getInstance()
-        .performCreateUser(widget.email, widget.password);
+    _createUserFuture = GClientWrapper.getInstance().performMutation(
+        _CREATE_USER_MUTATION,
+        <String, dynamic>{'mail': widget.email, 'password': widget.password});
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<QueryResult>(
-      future: _resultFuture,
+      future: _createUserFuture,
       initialData: QueryResult.unexecuted,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

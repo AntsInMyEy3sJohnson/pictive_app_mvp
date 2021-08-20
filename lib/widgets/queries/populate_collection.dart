@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
@@ -9,6 +7,7 @@ import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/state/events/collection_retrieved.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
+import 'package:pictive_app_mvp/widgets/queries/populate_images.dart';
 
 class PopulateCollection extends StatefulWidget {
   final String collectionID;
@@ -23,19 +22,36 @@ class PopulateCollection extends StatefulWidget {
 class _PopulateCollectionState extends State<PopulateCollection> {
   static const IconData _TILE_ICON_WHEN_COLLAPSED = Icons.keyboard_arrow_right;
   static const IconData _TILE_ICON_WHEN_EXPANDED = Icons.keyboard_arrow_down;
+  static const String _GET_COLLECTION_BY_ID_QUERY = r'''
+    query GetCollectionByID($id: ID!) {
+      getCollectionByID(id: $id) {
+        collections {
+          id
+          displayName
+          images {
+            id
+          }
+          owner {
+            id
+          }
+        }
+      }
+    }
+    ''';
 
   late final UserBloc _userBloc;
 
   late bool _expanded;
   late IconData _tileIcon;
 
-  Future<QueryResult>? _resultFuture;
+  Future<QueryResult>? _getCollectionByIdFuture;
 
   @override
   void initState() {
     super.initState();
-    _resultFuture = GClientWrapper.getInstance()
-        .performGetCollectionByID(widget.collectionID);
+    _getCollectionByIdFuture = GClientWrapper.getInstance().performQuery(
+        _GET_COLLECTION_BY_ID_QUERY,
+        <String, dynamic>{'id': widget.collectionID});
     _userBloc = context.read<UserBloc>();
     _expanded = widget.expandedByDefault;
     _tileIcon =
@@ -48,7 +64,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
       padding: EdgeInsets.symmetric(
           vertical: MediaQuery.of(context).size.height * 0.005),
       child: FutureBuilder<QueryResult>(
-          future: _resultFuture,
+          future: _getCollectionByIdFuture,
           initialData: QueryResult.unexecuted,
           builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
             if (snapshot.connectionState == ConnectionState.none ||
@@ -84,15 +100,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                       constraints: BoxConstraints(
                         maxHeight: MediaQuery.of(context).size.height * 0.7,
                       ),
-                      child: collection.images?.isEmpty ?? true
-                          ? const Text("No images here yet.")
-                          : GridView.count(
-                              crossAxisCount: 3,
-                              children: collection.images!
-                                  .map((image) => Image.memory(
-                                      base64Decode(image.preview!)))
-                                  .toList(),
-                            ),
+                      child: PopulateImages(widget.collectionID),
                     ),
                 ],
               );

@@ -19,21 +19,45 @@ class LogInUser extends StatefulWidget {
 }
 
 class _LogInUserState extends State<LogInUser> {
-  late final Future<QueryResult> _resultFuture;
+  static const String _GET_USER_BY_MAIL_QUERY = r'''
+      query GetUserByMail($mail: String!){
+      getUserByMail(mail: $mail){
+        users {
+          id
+          mail
+          ownedCollections {
+            id
+          }
+          sharedCollections {
+            id
+            defaultCollection
+          }
+          defaultCollection {
+            id
+          }
+          ownedImages {
+            id
+          }
+        }
+      }
+    }
+  ''';
+
+  late final Future<QueryResult> _getUserByMailFuture;
   late final UserBloc _userBloc;
 
   @override
   void initState() {
     super.initState();
-    _resultFuture =
-        GClientWrapper.getInstance().performGetUserByMail(widget.email);
+    _getUserByMailFuture = GClientWrapper.getInstance().performQuery(
+        _GET_USER_BY_MAIL_QUERY, <String, dynamic>{'mail': widget.email});
     _userBloc = context.read<UserBloc>();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<QueryResult>(
-      future: _resultFuture,
+      future: _getUserByMailFuture,
       initialData: QueryResult.unexecuted,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -62,5 +86,4 @@ class _LogInUserState extends State<LogInUser> {
     //  is still a back arrow displayed on the Overview page
     Navigator.pushReplacementNamed(context, OverviewPage.ROUTE_ID);
   }
-
 }
