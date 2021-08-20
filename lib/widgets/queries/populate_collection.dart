@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
 import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
-import 'package:pictive_app_mvp/state/events/collection_retrieved.dart';
-import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
 import 'package:pictive_app_mvp/widgets/queries/populate_image_grid.dart';
 
@@ -39,8 +36,6 @@ class _PopulateCollectionState extends State<PopulateCollection> {
     }
     ''';
 
-  late final UserBloc _userBloc;
-
   late bool _expanded;
   late IconData _tileIcon;
 
@@ -52,7 +47,6 @@ class _PopulateCollectionState extends State<PopulateCollection> {
     _getCollectionByIdFuture = GClientWrapper.getInstance().performQuery(
         _GET_COLLECTION_BY_ID_QUERY,
         <String, dynamic>{'id': widget.collectionID});
-    _userBloc = context.read<UserBloc>();
     _expanded = widget.expandedByDefault;
     _tileIcon =
         _expanded ? _TILE_ICON_WHEN_EXPANDED : _TILE_ICON_WHEN_COLLAPSED;
@@ -74,7 +68,6 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                 snapshot.hasData) {
               final Collection collection =
                   _extractCollectionBag(snapshot.data!).collections![0];
-              _onCollectionQueryComplete(collection);
               return Column(
                 children: [
                   DecoratedBox(
@@ -108,10 +101,6 @@ class _PopulateCollectionState extends State<PopulateCollection> {
             return const Icon(Icons.error);
           }),
     );
-  }
-
-  void _onCollectionQueryComplete(Collection collection) {
-    _userBloc.add(CollectionRetrieved(collection));
   }
 
   CollectionBag _extractCollectionBag(QueryResult queryResult) {

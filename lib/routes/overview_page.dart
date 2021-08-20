@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as imagelib;
 import 'package:image_picker/image_picker.dart';
-import 'package:pictive_app_mvp/state/events/images_added.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/queries/populate_collection_list.dart';
 
@@ -87,8 +86,6 @@ class _OverviewPageState extends State<OverviewPage> {
         if (image != null) {
           final List<int> pngInts = imagelib.encodePng(image);
           final String base64Payload = base64.encode(pngInts);
-          _userBloc.add(ImagesAdded(
-              _userBloc.state.defaultCollection!.id!, [base64Payload]));
         }
       } else {
         print("Received null image from camera.");
