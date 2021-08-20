@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as imagelib;
 import 'package:image_picker/image_picker.dart';
-import 'package:pictive_app_mvp/data/collection/collection.dart';
-import 'package:pictive_app_mvp/data/user/user.dart';
 import 'package:pictive_app_mvp/state/events/images_added.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
-import 'package:pictive_app_mvp/widgets/queries/populate_collection.dart';
+import 'package:pictive_app_mvp/widgets/queries/populate_collection_list.dart';
 
 class OverviewPage extends StatefulWidget {
   static const String ROUTE_ID = "/overview";
@@ -43,18 +41,7 @@ class _OverviewPageState extends State<OverviewPage> {
         ],
       ),
       body: Center(
-        child: BlocBuilder<UserBloc, User>(
-          builder: (context, state) {
-            final List<Collection> sharedCollections = state.sharedCollections!;
-            return ListView.builder(
-              itemCount: sharedCollections.length,
-              itemBuilder: (context, index) => PopulateCollection(
-                sharedCollections[index].id!,
-                expandedByDefault: sharedCollections[index].defaultCollection!,
-              ),
-            );
-          },
-        ),
+        child: PopulateCollectionList(_userBloc.state.mail!),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: Column(

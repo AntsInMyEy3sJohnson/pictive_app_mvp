@@ -7,16 +7,16 @@ import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
 
-class PopulateImages extends StatefulWidget {
+class PopulateImageGrid extends StatefulWidget {
   final String collectionID;
 
-  const PopulateImages(this.collectionID);
+  const PopulateImageGrid(this.collectionID);
 
   @override
-  _PopulateImagesState createState() => _PopulateImagesState();
+  _PopulateImageGridState createState() => _PopulateImageGridState();
 }
 
-class _PopulateImagesState extends State<PopulateImages> {
+class _PopulateImageGridState extends State<PopulateImageGrid> {
   static const String _GET_COLLECTION_BY_ID_WITH_IMAGE_PAYLOADS_QUERY = r'''
       query GetImagePayloadsInCollection($collectionID: ID!) {
         getCollectionByID(id: $collectionID) {

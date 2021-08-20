@@ -7,7 +7,7 @@ import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/state/events/collection_retrieved.dart';
 import 'package:pictive_app_mvp/state/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
-import 'package:pictive_app_mvp/widgets/queries/populate_images.dart';
+import 'package:pictive_app_mvp/widgets/queries/populate_image_grid.dart';
 
 class PopulateCollection extends StatefulWidget {
   final String collectionID;
@@ -100,7 +100,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                       constraints: BoxConstraints(
                         maxHeight: MediaQuery.of(context).size.height * 0.7,
                       ),
-                      child: PopulateImages(widget.collectionID),
+                      child: PopulateImageGrid(widget.collectionID),
                     ),
                 ],
               );
