@@ -53,9 +53,13 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
           final List<Collection> sharedCollections = user.sharedCollections!;
           return ListView.builder(
             itemCount: sharedCollections.length,
-            itemBuilder: (context, index) => PopulateCollection(
-              sharedCollections[index].id!,
-              expandedByDefault: sharedCollections[index].defaultCollection!,
+            itemBuilder: (context, index) => Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: MediaQuery.of(context).size.height * 0.005),
+              child: PopulateCollection(
+                sharedCollections[index].id!,
+                expandedByDefault: sharedCollections[index].defaultCollection!,
+              ),
             ),
           );
         }

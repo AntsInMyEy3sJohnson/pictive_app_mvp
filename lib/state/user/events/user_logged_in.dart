@@ -1,5 +1,5 @@
 import 'package:pictive_app_mvp/data/user/user.dart';
-import 'package:pictive_app_mvp/state/events/user_event.dart';
+import 'package:pictive_app_mvp/state/user/events/user_event.dart';
 
 class UserLoggedIn extends UserEvent {
 

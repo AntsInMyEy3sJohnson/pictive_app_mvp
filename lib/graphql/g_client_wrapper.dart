@@ -21,7 +21,9 @@ class GClientWrapper {
     final QueryOptions queryOptions = QueryOptions(
       document: gql(query),
       variables: variables,
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
     );
+    print("Executing query.");
     return _graphQLClient.query(queryOptions);
   }
 

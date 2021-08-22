@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pictive_app_mvp/data/user/user.dart';
-import 'package:pictive_app_mvp/state/events/user_event.dart';
-import 'package:pictive_app_mvp/state/events/user_logged_in.dart';
+import 'package:pictive_app_mvp/state/user/events/user_event.dart';
+import 'package:pictive_app_mvp/state/user/events/user_logged_in.dart';
 
 class UserBloc extends Bloc<UserEvent, User> {
   UserBloc(User initialState) : super(initialState);

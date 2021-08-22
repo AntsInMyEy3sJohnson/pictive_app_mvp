@@ -54,53 +54,49 @@ class _PopulateCollectionState extends State<PopulateCollection> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          vertical: MediaQuery.of(context).size.height * 0.005),
-      child: FutureBuilder<QueryResult>(
-          future: _getCollectionByIdFuture,
-          initialData: QueryResult.unexecuted,
-          builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
-            if (snapshot.connectionState == ConnectionState.none ||
-                snapshot.connectionState == ConnectionState.waiting) {
-              return const CenteredCircularProgressIndicator();
-            } else if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasData) {
-              final Collection collection =
-                  _extractCollectionBag(snapshot.data!).collections![0];
-              return Column(
-                children: [
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
+    return FutureBuilder<QueryResult>(
+        future: _getCollectionByIdFuture,
+        initialData: QueryResult.unexecuted,
+        builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
+          if (snapshot.connectionState == ConnectionState.none ||
+              snapshot.connectionState == ConnectionState.waiting) {
+            return const CenteredCircularProgressIndicator();
+          } else if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            final Collection collection =
+                _extractCollectionBag(snapshot.data!).collections![0];
+            return Column(
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                  ),
+                  child: ListTile(
+                    leading: Container(
+                      decoration: BoxDecoration(shape: BoxShape.circle),
+                      // Enable user to pick a thumbnail for the collection
+                      child: Icon(Icons.image),
                     ),
-                    child: ListTile(
-                      leading: Container(
-                        decoration: BoxDecoration(shape: BoxShape.circle),
-                        // Enable user to pick a thumbnail for the collection
-                        child: Icon(Icons.image),
-                      ),
-                      title: Text("${collection.displayName}"),
-                      trailing: ElevatedButton(
-                        onPressed: _processExpandButtonPressed,
-                        child: Icon(_tileIcon),
-                        style: ElevatedButton.styleFrom(shape: CircleBorder()),
-                      ),
+                    title: Text("${collection.displayName}"),
+                    trailing: ElevatedButton(
+                      onPressed: _processExpandButtonPressed,
+                      child: Icon(_tileIcon),
+                      style: ElevatedButton.styleFrom(shape: CircleBorder()),
                     ),
                   ),
-                  if (_expanded)
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.7,
-                      ),
-                      child: PopulateImageGrid(widget.collectionID),
+                ),
+                if (_expanded)
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.7,
                     ),
-                ],
-              );
-            }
-            return const Icon(Icons.error);
-          }),
-    );
+                    child: PopulateImageGrid(widget.collectionID),
+                  ),
+              ],
+            );
+          }
+          return const Icon(Icons.error);
+        });
   }
 
   CollectionBag _extractCollectionBag(QueryResult queryResult) {
