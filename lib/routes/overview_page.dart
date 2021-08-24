@@ -9,6 +9,7 @@ import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
 import 'package:pictive_app_mvp/state/app/events/images_added_to_collection.dart';
 import 'package:pictive_app_mvp/state/user/user_bloc.dart';
+import 'package:pictive_app_mvp/widgets/loading_overlay.dart';
 import 'package:pictive_app_mvp/widgets/queries/populate_collection_list.dart';
 
 class OverviewPage extends StatefulWidget {
@@ -55,6 +56,7 @@ class _OverviewPageState extends State<OverviewPage> {
           FloatingActionButton(
             tooltip: "Select images from your gallery",
             child: const Icon(Icons.photo),
+            // TODO Wrap this entire call in Future to display overlay for complete length of operation?
             onPressed: _processSelectImagesButtonPressed,
             heroTag: "pickMultiImageFromGalleryFab",
           ),
@@ -72,11 +74,12 @@ class _OverviewPageState extends State<OverviewPage> {
 
   void _processSelectImagesButtonPressed() async {
     try {
-      final List<XFile>? selectedImages = await _imagePicker.pickMultiImage();
-      if (selectedImages != null) {
-      } else {
-        print("Received null list from image picker");
+      final List<XFile>? xfiles = await _imagePicker.pickMultiImage();
+      if (xfiles == null) {
+        print("Received null list of images from image picker.");
+        return;
       }
+      _uploadImagesToCollection(_userBloc.state.defaultCollection!.id!, xfiles);
     } catch (e) {
       print("Error while attempting to pick images: $e");
     }
@@ -86,51 +89,73 @@ class _OverviewPageState extends State<OverviewPage> {
     try {
       final XFile? xfile =
           await _imagePicker.pickImage(source: ImageSource.camera);
-      if (xfile != null) {
-        final imagelib.Image? image =
-            imagelib.decodeImage(await xfile.readAsBytes());
-        if (image != null) {
-          final List<int> pngInts = imagelib.encodePng(image);
-          final String base64Payload = base64.encode(pngInts);
-          final String collectionID = _userBloc.state.defaultCollection!.id!;
-          final QueryResult uploadResult = await GClientWrapper.getInstance()
-              .performMutation(_uploadImagesMutation(), <String, dynamic>{
-            'ownerID': _userBloc.state.id,
-            // TODO Implement dynamic activation and deactivation of collections
-            'collectionID': collectionID,
-            'base64Payloads': [base64Payload],
-          });
-          if (!uploadResult.hasException) {
-            _appBloc.add(ImagesAddedToCollection(collectionID));
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text("Image upload successful"),
-                    ],
-                  ),
-                ),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("${uploadResult.exception.toString()}"),
-                  ],
-                ),
-              ),
-            );
-          }
-        }
-      } else {
-        print("Received null image from camera.");
+      if (xfile == null) {
+        print("Received null image from image picker.");
+        return;
       }
+      _uploadImagesToCollection(
+          _userBloc.state.defaultCollection!.id!, [xfile]);
     } catch (e) {
       print("An error occurred while attempting to take a picture: $e");
     }
+  }
+
+  void _uploadImagesToCollection(
+      String collectionID, List<XFile> xfiles) async {
+    final List<String> base64Payloads = await _generateBase64Payloads(xfiles);
+    final Future<QueryResult> resultFuture = _uploadBase64Payloads(
+        // TODO Implement dynamic activation and deactivation of collections
+        collectionID,
+        base64Payloads);
+    final QueryResult queryResult =
+        await LoadingOverlay.of(context).during(resultFuture);
+    _processUploadResult(collectionID, queryResult);
+  }
+
+  Future<List<String>> _generateBase64Payloads(List<XFile> xfiles) async {
+    final List<String> base64Payloads = List.empty(growable: true);
+    for (XFile xfile in xfiles) {
+      final imagelib.Image? image =
+          imagelib.decodeImage(await xfile.readAsBytes());
+      if (image == null) {
+        // TODO Add logging
+        print("Unknown error while processing image.");
+        return base64Payloads;
+      }
+      final List<int> pngInts = imagelib.encodePng(image);
+      base64Payloads.add(base64.encode(pngInts));
+    }
+    return base64Payloads;
+  }
+
+  Future<QueryResult> _uploadBase64Payloads(
+      String collectionID, List<String> base64Payloads) async {
+    return GClientWrapper.getInstance()
+        .performMutation(_uploadImagesMutation(), <String, dynamic>{
+      'ownerID': _userBloc.state.id,
+      'collectionID': collectionID,
+      'base64Payloads': base64Payloads,
+    });
+  }
+
+  // TODO Read collectionID from result
+  void _processUploadResult(String collectionID, QueryResult queryResult) {
+    if (queryResult.hasException) {
+      print(
+          "Encountered exception during image upload: ${queryResult.exception.toString()}");
+      return;
+    }
+    _appBloc.add(ImagesAddedToCollection(collectionID));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Image upload successful"),
+          ],
+        ),
+      ),
+    );
   }
 
   String _uploadImagesMutation() {
