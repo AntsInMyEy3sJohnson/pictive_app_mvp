@@ -7,8 +7,11 @@ import 'package:image/image.dart' as imagelib;
 import 'package:image_picker/image_picker.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
+import 'package:pictive_app_mvp/state/app/events/collection_created.dart';
 import 'package:pictive_app_mvp/state/app/events/images_added_to_collection.dart';
 import 'package:pictive_app_mvp/state/user/user_bloc.dart';
+import 'package:pictive_app_mvp/widgets/dialogs/create_new_collection_dialog.dart';
+import 'package:pictive_app_mvp/widgets/dialogs/dialog_helper.dart';
 import 'package:pictive_app_mvp/widgets/loading_overlay.dart';
 import 'package:pictive_app_mvp/widgets/queries/populate_collection_list.dart';
 
@@ -54,6 +57,13 @@ class _OverviewPageState extends State<OverviewPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
+            tooltip: "Create a new collection",
+            child: const Icon(Icons.collections),
+            onPressed: _processCreateNewCollectionButtonPressed,
+            heroTag: "createNewCollectionFab",
+          ),
+          Flexible(child: FractionallySizedBox(heightFactor: 0.01)),
+          FloatingActionButton(
             tooltip: "Select images from your gallery",
             child: const Icon(Icons.photo),
             // TODO Wrap this entire call in Future to display overlay for complete length of operation?
@@ -68,6 +78,47 @@ class _OverviewPageState extends State<OverviewPage> {
             heroTag: "takePicturesWithCameraFab",
           ),
         ],
+      ),
+    );
+  }
+
+  void _processCreateNewCollectionButtonPressed() async {
+    final String? collectionName = await DialogHelper<String>()
+        .show(context, const CreateNewCollectionDialog());
+    if (collectionName != null) {
+      final Future<QueryResult> resultFuture =
+          GClientWrapper.getInstance().performMutation(
+        _createCollectionMutation(),
+        <String, dynamic>{
+          'ownerID': _userBloc.state.id,
+          'displayName': collectionName,
+          'pin': 0000,
+          'nonOwnersCanShare': false,
+          'nonOwnersCanWrite': false,
+        },
+      );
+      final QueryResult queryResult =
+          await LoadingOverlay.of(context).during(resultFuture);
+      _processNewCollectionCreated(collectionName, queryResult);
+    }
+  }
+
+  void _processNewCollectionCreated(
+      String collectionName, QueryResult queryResult) {
+    if (queryResult.hasException) {
+      print(
+          "Encountered exception during collection creation: ${queryResult.exception.toString()}");
+      return;
+    }
+    _appBloc.add(CollectionCreated(collectionName));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Collection successfully created."),
+          ],
+        ),
       ),
     );
   }
@@ -151,11 +202,23 @@ class _OverviewPageState extends State<OverviewPage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Image upload successful"),
+            const Text("Images successfully uploaded."),
           ],
         ),
       ),
     );
+  }
+
+  String _createCollectionMutation() {
+    return r'''
+    mutation createCollection($ownerID: ID!, $displayName: String!, $pin: Int!, $nonOwnersCanShare: Boolean!, $nonOwnersCanWrite: Boolean!){
+      createCollection(ownerID: $ownerID, displayName: $displayName, pin: $pin, nonOwnersCanShare: $nonOwnersCanShare, nonOwnersCanWrite: $nonOwnersCanWrite) {
+        collections {
+          displayName
+        }
+      }
+    }  
+    ''';
   }
 
   String _uploadImagesMutation() {
