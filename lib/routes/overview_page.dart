@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
 import 'package:image/image.dart' as imagelib;
 import 'package:image_picker/image_picker.dart';
+import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_created.dart';
@@ -99,28 +100,36 @@ class _OverviewPageState extends State<OverviewPage> {
       );
       final QueryResult queryResult =
           await LoadingOverlay.of(context).during(resultFuture);
-      _processNewCollectionCreated(collectionName, queryResult);
+      _processNewCollectionCreated(queryResult);
     }
   }
 
-  void _processNewCollectionCreated(
-      String collectionName, QueryResult queryResult) {
+  void _processNewCollectionCreated(QueryResult queryResult) {
     if (queryResult.hasException) {
       print(
           "Encountered exception during collection creation: ${queryResult.exception.toString()}");
       return;
     }
-    _appBloc.add(CollectionCreated(collectionName));
+    final CollectionBag collectionBag =
+        _extractCollectionBag(queryResult, "createCollection");
+    final String collectionName = collectionBag.collections![0].displayName!;
+    _appBloc.add(
+        CollectionCreated(collectionBag.collections![0].id!, collectionName));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Collection successfully created."),
+            Text("Collection '$collectionName' successfully created."),
           ],
         ),
       ),
     );
+  }
+
+  CollectionBag _extractCollectionBag(
+      QueryResult queryResult, String payloadEntryNode) {
+    return CollectionBag.fromJson(queryResult.data![payloadEntryNode]);
   }
 
   void _processSelectImagesButtonPressed() async {
@@ -189,7 +198,6 @@ class _OverviewPageState extends State<OverviewPage> {
     });
   }
 
-  // TODO Read collectionID from result
   void _processUploadResult(String collectionID, QueryResult queryResult) {
     if (queryResult.hasException) {
       print(
@@ -211,9 +219,10 @@ class _OverviewPageState extends State<OverviewPage> {
 
   String _createCollectionMutation() {
     return r'''
-    mutation createCollection($ownerID: ID!, $displayName: String!, $pin: Int!, $nonOwnersCanShare: Boolean!, $nonOwnersCanWrite: Boolean!){
+    mutation CreateCollection($ownerID: ID!, $displayName: String!, $pin: Int!, $nonOwnersCanShare: Boolean!, $nonOwnersCanWrite: Boolean!){
       createCollection(ownerID: $ownerID, displayName: $displayName, pin: $pin, nonOwnersCanShare: $nonOwnersCanShare, nonOwnersCanWrite: $nonOwnersCanWrite) {
         collections {
+          id
           displayName
         }
       }

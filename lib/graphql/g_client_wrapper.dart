@@ -23,7 +23,6 @@ class GClientWrapper {
       variables: variables,
       fetchPolicy: FetchPolicy.cacheAndNetwork,
     );
-    print("Executing query.");
     return _graphQLClient.query(queryOptions);
   }
 
