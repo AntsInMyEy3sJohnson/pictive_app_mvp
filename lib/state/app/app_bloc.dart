@@ -12,8 +12,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   @override
   Stream<AppState> mapEventToState(AppEvent event) async* {
-    if (event is DefaultCollectionRetrieved) {
-      yield await _mapDefaultCollectionAddedToAppState(event);
+    if (event is CollectionsRetrieved) {
+      yield await _mapCollectionsRetrievedToAppState(event);
     } else if (event is ImagesAddedToCollection) {
       yield await _mapImagesAddedToCollectionToAppState(event);
     } else if (event is CollectionCreated) {
@@ -40,9 +40,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     return state.withAddedAndExpandedCollection(collectionCreated.collectionID);
   }
 
-  Future<AppState> _mapDefaultCollectionAddedToAppState(
-      DefaultCollectionRetrieved defaultCollectionAdded) async {
-    return state.withAddedAndExpandedCollection(defaultCollectionAdded.collectionID);
+  Future<AppState> _mapCollectionsRetrievedToAppState(
+      CollectionsRetrieved collectionsRetrieved) async {
+    return state.withAddedCollectionsAndExpandedDefaultCollection(collectionsRetrieved.collectionIDs, collectionsRetrieved.defaultCollectionID);
   }
 
   Future<AppState> _mapImagesAddedToCollectionToAppState(

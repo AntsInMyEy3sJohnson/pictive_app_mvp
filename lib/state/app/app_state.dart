@@ -33,12 +33,35 @@ class AppState extends Equatable {
         generation + 1, collectionIDs, expandedCollapsedCollectionIDs);
   }
 
+  AppState withAddedCollectionsAndExpandedDefaultCollection(
+      List<String> newCollectionIDs, String defaultCollectionID) {
+    final List<String> collectionIDs = List.from(this.collectionIDs);
+    collectionIDs.addAll(newCollectionIDs);
+    final Map<String, bool> expandedCollapsedCollectionIDs =
+        Map.from(this.expandedCollapsedCollectionIDs);
+    newCollectionIDs.forEach((element) {
+      if (element == defaultCollectionID) {
+        expandedCollapsedCollectionIDs[element] = true;
+      } else {
+        expandedCollapsedCollectionIDs[element] = false;
+      }
+    });
+    return AppState(
+        generation + 1, collectionIDs, expandedCollapsedCollectionIDs);
+  }
+
   AppState withAddedAndExpandedCollection(String collectionID) {
     final List<String> collectionIDs = List.of(this.collectionIDs);
     collectionIDs.add(collectionID);
     final Map<String, bool> collectionActiveOverview =
         Map.from(this.expandedCollapsedCollectionIDs);
-    collectionActiveOverview[collectionID] = true;
+    // TODO Refactor commonly used functionality into own methods
+    expandedCollapsedCollectionIDs.updateAll((key, value) {
+      if (key == collectionID) {
+        return true;
+      }
+      return false;
+    });
     return AppState(generation + 1, collectionIDs, collectionActiveOverview);
   }
 

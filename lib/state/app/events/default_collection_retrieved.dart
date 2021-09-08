@@ -1,12 +1,13 @@
 import 'package:pictive_app_mvp/state/app/events/app_event.dart';
 
-class DefaultCollectionRetrieved extends AppEvent {
+class CollectionsRetrieved extends AppEvent {
 
-  final String collectionID;
+  final List<String> collectionIDs;
+  final String defaultCollectionID;
 
-  const DefaultCollectionRetrieved(this.collectionID);
+  const CollectionsRetrieved(this.collectionIDs, this.defaultCollectionID);
 
   @override
-  List<Object?> get props => [collectionID];
+  List<Object?> get props => [defaultCollectionID, collectionIDs];
 
 }

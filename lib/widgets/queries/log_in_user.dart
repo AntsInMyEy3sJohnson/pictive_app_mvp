@@ -88,7 +88,9 @@ class _LogInUserState extends State<LogInUser> {
         UserBag.fromJson(queryResult.data!["getUserByMail"]);
     final User user = userBag.users![0];
     _userBloc.add(UserLoggedIn(user));
-    _appBloc.add(DefaultCollectionRetrieved(user.defaultCollection!.id!));
+    _appBloc.add(CollectionsRetrieved(
+        user.sharedCollections!.map((e) => e.id!).toList(),
+        user.defaultCollection!.id!));
     // TODO Pass this as callback into widget -- currently, there
     //  is still a back arrow displayed on the Overview page
     Navigator.pushReplacementNamed(context, OverviewPage.ROUTE_ID);
