@@ -48,7 +48,9 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
       buildWhen: (previous, current) {
         final bool needsRebuild =
             current.collectionIDs.length > previous.collectionIDs.length;
-        this._getUserSharedCollectionsFuture = _performQuery();
+        if (needsRebuild) {
+          this._getUserSharedCollectionsFuture = _performQuery();
+        }
         return needsRebuild;
       },
       builder: (context, state) {
@@ -69,11 +71,7 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
                 itemBuilder: (context, index) => Padding(
                   padding: EdgeInsets.symmetric(
                       vertical: MediaQuery.of(context).size.height * 0.005),
-                  child: PopulateCollection(
-                    sharedCollections[index].id!,
-                    expandedByDefault:
-                        sharedCollections[index].defaultCollection!,
-                  ),
+                  child: PopulateCollection(sharedCollections[index].id!),
                 ),
               );
             }

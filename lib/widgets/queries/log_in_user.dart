@@ -5,7 +5,7 @@ import 'package:pictive_app_mvp/data/user/user_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/routes/overview_page.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
-import 'package:pictive_app_mvp/state/app/events/default_collection_added.dart';
+import 'package:pictive_app_mvp/state/app/events/default_collection_retrieved.dart';
 import 'package:pictive_app_mvp/state/user/events/user_logged_in.dart';
 import 'package:pictive_app_mvp/state/user/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
@@ -88,7 +88,7 @@ class _LogInUserState extends State<LogInUser> {
         UserBag.fromJson(queryResult.data!["getUserByMail"]);
     final User user = userBag.users![0];
     _userBloc.add(UserLoggedIn(user));
-    _appBloc.add(DefaultCollectionAdded(user.defaultCollection!.id!));
+    _appBloc.add(DefaultCollectionRetrieved(user.defaultCollection!.id!));
     // TODO Pass this as callback into widget -- currently, there
     //  is still a back arrow displayed on the Overview page
     Navigator.pushReplacementNamed(context, OverviewPage.ROUTE_ID);

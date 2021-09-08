@@ -44,8 +44,11 @@ class _PopulateImageGridState extends State<PopulateImageGrid> {
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (previous, current) {
-        final bool needsRebuild = current.activeCollectionID == widget.collectionID;
-        this._populateImagesFuture = _performQuery();
+        final bool needsRebuild =
+            current.expandedCollapsedCollectionIDs[widget.collectionID]!;
+        if (needsRebuild) {
+          this._populateImagesFuture = _performQuery();
+        }
         return needsRebuild;
       },
       builder: (context, state) {
@@ -58,7 +61,7 @@ class _PopulateImageGridState extends State<PopulateImageGrid> {
             } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasData) {
               final Collection collection =
-              _extractCollectionBag(snapshot.data!).collections![0];
+                  _extractCollectionBag(snapshot.data!).collections![0];
               if (collection.images?.isEmpty ?? true) {
                 return const Text("No images yet.");
               }
@@ -85,5 +88,4 @@ class _PopulateImageGridState extends State<PopulateImageGrid> {
   CollectionBag _extractCollectionBag(QueryResult queryResult) {
     return CollectionBag.fromJson(queryResult.data!["getCollectionByID"]);
   }
-
 }
