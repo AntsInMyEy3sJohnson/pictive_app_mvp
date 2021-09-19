@@ -67,7 +67,6 @@ class _OverviewPageState extends State<OverviewPage> {
           FloatingActionButton(
             tooltip: "Select images from your gallery",
             child: const Icon(Icons.photo),
-            // TODO Wrap this entire call in Future to display overlay for complete length of operation?
             onPressed: _processSelectImagesButtonPressed,
             heroTag: "pickMultiImageFromGalleryFab",
           ),
@@ -87,8 +86,8 @@ class _OverviewPageState extends State<OverviewPage> {
     final String? collectionName = await DialogHelper<String>()
         .show(context, const CreateNewCollectionDialog());
     if (collectionName != null) {
-      final Future<QueryResult> resultFuture =
-          GClientWrapper.getInstance().performMutation(
+      final QueryResult queryResult = await LoadingOverlay.of(context)
+          .during(GClientWrapper.getInstance().performMutation(
         _createCollectionMutation(),
         <String, dynamic>{
           'ownerID': _userBloc.state.id,
@@ -97,9 +96,7 @@ class _OverviewPageState extends State<OverviewPage> {
           'nonOwnersCanShare': false,
           'nonOwnersCanWrite': false,
         },
-      );
-      final QueryResult queryResult =
-          await LoadingOverlay.of(context).during(resultFuture);
+      ));
       _processNewCollectionCreated(queryResult);
     }
   }
@@ -139,7 +136,8 @@ class _OverviewPageState extends State<OverviewPage> {
         print("Received null list of images from image picker.");
         return;
       }
-      _uploadImagesToCollection(evaluateTargetCollection(), xfiles);
+      await LoadingOverlay.of(context).during(
+          _uploadImagesToCollection(evaluateTargetCollection(), xfiles));
     } catch (e) {
       print("Error while attempting to pick images: $e");
     }
@@ -153,20 +151,25 @@ class _OverviewPageState extends State<OverviewPage> {
         print("Received null image from image picker.");
         return;
       }
-      _uploadImagesToCollection(evaluateTargetCollection(), [xfile]);
+      await LoadingOverlay.of(context).during(
+          _uploadImagesToCollection(evaluateTargetCollection(), [xfile]));
     } catch (e) {
       print("An error occurred while attempting to take a picture: $e");
     }
   }
 
-  void _uploadImagesToCollection(
+  Future<void> _uploadImagesToCollection(
       String collectionID, List<XFile> xfiles) async {
     final List<String> base64Payloads = await _generateBase64Payloads(xfiles);
-    final Future<QueryResult> resultFuture =
-        _uploadBase64Payloads(collectionID, base64Payloads);
-    final QueryResult queryResult =
-        await LoadingOverlay.of(context).during(resultFuture);
-    _processUploadResult(collectionID, queryResult);
+    _processUploadResult(
+      collectionID,
+      await GClientWrapper.getInstance()
+          .performMutation(_uploadImagesMutation(), <String, dynamic>{
+        'ownerID': _userBloc.state.id,
+        'collectionID': collectionID,
+        'base64Payloads': base64Payloads,
+      }),
+    );
   }
 
   String evaluateTargetCollection() {
@@ -188,16 +191,6 @@ class _OverviewPageState extends State<OverviewPage> {
       base64Payloads.add(base64.encode(pngInts));
     }
     return base64Payloads;
-  }
-
-  Future<QueryResult> _uploadBase64Payloads(
-      String collectionID, List<String> base64Payloads) async {
-    return GClientWrapper.getInstance()
-        .performMutation(_uploadImagesMutation(), <String, dynamic>{
-      'ownerID': _userBloc.state.id,
-      'collectionID': collectionID,
-      'base64Payloads': base64Payloads,
-    });
   }
 
   void _processUploadResult(String collectionID, QueryResult queryResult) {
