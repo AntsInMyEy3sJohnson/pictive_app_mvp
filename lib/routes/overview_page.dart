@@ -53,8 +53,8 @@ class _OverviewPageState extends State<OverviewPage> {
       body: Center(
         child: PopulateCollectionList(_userBloc.state.mail!),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: Column(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
@@ -63,20 +63,21 @@ class _OverviewPageState extends State<OverviewPage> {
             onPressed: _processCreateNewCollectionButtonPressed,
             heroTag: "createNewCollectionFab",
           ),
-          Flexible(child: FractionallySizedBox(heightFactor: 0.01)),
+          Flexible(child: FractionallySizedBox(widthFactor: 0.02)),
           FloatingActionButton(
             tooltip: "Select images from your gallery",
             child: const Icon(Icons.photo),
             onPressed: _processSelectImagesButtonPressed,
             heroTag: "pickMultiImageFromGalleryFab",
           ),
-          Flexible(child: FractionallySizedBox(heightFactor: 0.01)),
+          Flexible(child: FractionallySizedBox(widthFactor: 0.02)),
           FloatingActionButton(
             tooltip: "Take a picture with your phone's camera",
             child: const Icon(Icons.camera_alt),
             onPressed: _processTakePictureButtonPressed,
             heroTag: "takePicturesWithCameraFab",
           ),
+          Flexible(child: FractionallySizedBox(widthFactor: 0.06)),
         ],
       ),
     );
