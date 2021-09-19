@@ -139,7 +139,7 @@ class _OverviewPageState extends State<OverviewPage> {
         print("Received null list of images from image picker.");
         return;
       }
-      _uploadImagesToCollection(_userBloc.state.defaultCollection!.id!, xfiles);
+      _uploadImagesToCollection(evaluateTargetCollection(), xfiles);
     } catch (e) {
       print("Error while attempting to pick images: $e");
     }
@@ -153,10 +153,7 @@ class _OverviewPageState extends State<OverviewPage> {
         print("Received null image from image picker.");
         return;
       }
-      _uploadImagesToCollection(
-          _appBloc.state.getExpandedCollectionID() ??
-              _userBloc.state.defaultCollection!.id!,
-          [xfile]);
+      _uploadImagesToCollection(evaluateTargetCollection(), [xfile]);
     } catch (e) {
       print("An error occurred while attempting to take a picture: $e");
     }
@@ -170,6 +167,11 @@ class _OverviewPageState extends State<OverviewPage> {
     final QueryResult queryResult =
         await LoadingOverlay.of(context).during(resultFuture);
     _processUploadResult(collectionID, queryResult);
+  }
+
+  String evaluateTargetCollection() {
+    return _appBloc.state.getExpandedCollectionID() ??
+        _userBloc.state.defaultCollection!.id!;
   }
 
   Future<List<String>> _generateBase64Payloads(List<XFile> xfiles) async {
