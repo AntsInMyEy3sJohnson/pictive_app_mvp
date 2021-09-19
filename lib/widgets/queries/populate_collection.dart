@@ -60,10 +60,13 @@ class _PopulateCollectionState extends State<PopulateCollection> {
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (previous, current) {
-        final bool newExpanded = current.expandedCollectionsOverview[widget.collectionID]!;
-        final bool needsRebuild = _expanded != current.expandedCollectionsOverview[widget.collectionID]!;
+        final bool newExpanded =
+            current.expandedCollectionsOverview[widget.collectionID]!;
+        final bool needsRebuild = _expanded !=
+            current.expandedCollectionsOverview[widget.collectionID]!;
         _expanded = newExpanded;
-        _tileIcon = _expanded ? _TILE_ICON_WHEN_EXPANDED : _TILE_ICON_WHEN_COLLAPSED;
+        _tileIcon =
+            _expanded ? _TILE_ICON_WHEN_EXPANDED : _TILE_ICON_WHEN_COLLAPSED;
         if (needsRebuild && _expanded) {
           _getCollectionByIdFuture = _performQuery();
         }
@@ -82,6 +85,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
               final Collection collection =
                   _extractCollectionBag(snapshot.data!).collections![0];
               return Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   DecoratedBox(
                     decoration: BoxDecoration(
@@ -124,11 +128,10 @@ class _PopulateCollectionState extends State<PopulateCollection> {
   }
 
   void _processExpandButtonPressed() {
-    if(!_expanded) {
+    if (!_expanded) {
       _appBloc.add(CollectionExpanded(widget.collectionID));
     } else {
       _appBloc.add(CollectionCollapsed(widget.collectionID));
     }
   }
-
 }

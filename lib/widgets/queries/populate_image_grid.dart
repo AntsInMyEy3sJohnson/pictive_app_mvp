@@ -65,12 +65,17 @@ class _PopulateImageGridState extends State<PopulateImageGrid> {
               if (collection.images?.isEmpty ?? true) {
                 return const Text("No images yet.");
               }
-              return GridView.count(
-                crossAxisCount: 3,
-                shrinkWrap: true,
-                children: collection.images!
-                    .map((image) => Image.memory(base64.decode(image.payload!)))
-                    .toList(),
+              return ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                ),
+                child: GridView.count(
+                  crossAxisCount: 3,
+                  scrollDirection: Axis.horizontal,
+                  children: collection.images!
+                      .map((image) => Image.memory(base64.decode(image.payload!)))
+                      .toList(),
+                ),
               );
             }
             return const Icon(Icons.error);
