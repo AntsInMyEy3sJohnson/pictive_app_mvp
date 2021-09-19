@@ -45,7 +45,7 @@ class _PopulateImageGridState extends State<PopulateImageGrid> {
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (previous, current) {
         final bool needsRebuild =
-            current.expandedCollapsedCollectionIDs[widget.collectionID]!;
+            current.expandedCollectionsOverview[widget.collectionID]!;
         if (needsRebuild) {
           this._populateImagesFuture = _performQuery();
         }

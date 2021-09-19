@@ -60,8 +60,8 @@ class _PopulateCollectionState extends State<PopulateCollection> {
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (previous, current) {
-        final bool newExpanded = current.expandedCollapsedCollectionIDs[widget.collectionID]!;
-        final bool needsRebuild = _expanded != current.expandedCollapsedCollectionIDs[widget.collectionID]!;
+        final bool newExpanded = current.expandedCollectionsOverview[widget.collectionID]!;
+        final bool needsRebuild = _expanded != current.expandedCollectionsOverview[widget.collectionID]!;
         _expanded = newExpanded;
         _tileIcon = _expanded ? _TILE_ICON_WHEN_EXPANDED : _TILE_ICON_WHEN_COLLAPSED;
         if (needsRebuild && _expanded) {
