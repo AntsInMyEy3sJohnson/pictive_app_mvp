@@ -67,6 +67,7 @@ class _PopulateImageGridState extends State<PopulateImageGrid> {
               }
               return GridView.count(
                 crossAxisCount: 3,
+                shrinkWrap: true,
                 children: collection.images!
                     .map((image) => Image.memory(base64.decode(image.payload!)))
                     .toList(),

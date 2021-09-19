@@ -54,7 +54,11 @@ class AppState extends Equatable {
     return AppState(generation + 1, collectionIDs, expandedCollectionsOverview);
   }
 
-  bool isCollectionActive(String collectionID) {
+  String? getExpandedCollectionID() {
+    return this.expandedCollectionsOverview.keys.firstWhere((element) => expandedCollectionsOverview[element]!, orElse: null);
+  }
+
+  bool isCollectionExpanded(String collectionID) {
     return this.expandedCollectionsOverview[collectionID] ?? false;
   }
 

@@ -51,7 +51,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
     super.initState();
     _getCollectionByIdFuture = _performQuery();
     _appBloc = context.read<AppBloc>();
-    _expanded = _appBloc.state.isCollectionActive(widget.collectionID);
+    _expanded = _appBloc.state.isCollectionExpanded(widget.collectionID);
     _tileIcon =
         _expanded ? _TILE_ICON_WHEN_EXPANDED : _TILE_ICON_WHEN_COLLAPSED;
   }
@@ -101,13 +101,8 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                       ),
                     ),
                   ),
-                  if (state.isCollectionActive(widget.collectionID))
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.7,
-                      ),
-                      child: PopulateImageGrid(widget.collectionID),
-                    ),
+                  if (state.isCollectionExpanded(widget.collectionID))
+                    PopulateImageGrid(widget.collectionID),
                 ],
               );
             }

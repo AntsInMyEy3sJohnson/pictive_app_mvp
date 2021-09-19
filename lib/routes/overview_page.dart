@@ -154,7 +154,9 @@ class _OverviewPageState extends State<OverviewPage> {
         return;
       }
       _uploadImagesToCollection(
-          _userBloc.state.defaultCollection!.id!, [xfile]);
+          _appBloc.state.getExpandedCollectionID() ??
+              _userBloc.state.defaultCollection!.id!,
+          [xfile]);
     } catch (e) {
       print("An error occurred while attempting to take a picture: $e");
     }
@@ -163,10 +165,8 @@ class _OverviewPageState extends State<OverviewPage> {
   void _uploadImagesToCollection(
       String collectionID, List<XFile> xfiles) async {
     final List<String> base64Payloads = await _generateBase64Payloads(xfiles);
-    final Future<QueryResult> resultFuture = _uploadBase64Payloads(
-        // TODO Implement dynamic activation and deactivation of collections
-        collectionID,
-        base64Payloads);
+    final Future<QueryResult> resultFuture =
+        _uploadBase64Payloads(collectionID, base64Payloads);
     final QueryResult queryResult =
         await LoadingOverlay.of(context).during(resultFuture);
     _processUploadResult(collectionID, queryResult);
