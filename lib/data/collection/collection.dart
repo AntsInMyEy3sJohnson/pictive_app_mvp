@@ -16,6 +16,7 @@ class Collection extends Equatable {
   int? pin;
   bool? nonOwnersCanShare;
   bool? nonOwnersCanWrite;
+  String? creationTimestamp;
 
   Collection();
 

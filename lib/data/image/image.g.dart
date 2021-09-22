@@ -20,7 +20,8 @@ Image _$ImageFromJson(Map<String, dynamic> json) {
             .toList()
     ..owner = json['owner'] == null
         ? null
-        : User.fromJson(json['owner'] as Map<String, dynamic>);
+        : User.fromJson(json['owner'] as Map<String, dynamic>)
+    ..creationTimestamp = json['creationTimestamp'] as String?;
 }
 
 Map<String, dynamic> _$ImageToJson(Image instance) => <String, dynamic>{
@@ -30,4 +31,5 @@ Map<String, dynamic> _$ImageToJson(Image instance) => <String, dynamic>{
       'scoredLabels': instance.scoredLabels,
       'containedInCollections': instance.containedInCollections,
       'owner': instance.owner,
+      'creationTimestamp': instance.creationTimestamp,
     };

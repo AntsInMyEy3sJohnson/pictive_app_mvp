@@ -28,6 +28,7 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
             sharedCollections {
               id
               defaultCollection
+              creationTimestamp
             }
           }
         }
@@ -66,6 +67,7 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
               // TODO Add sorting -- descending according to creation timestamp
               final List<Collection> sharedCollections =
                   user.sharedCollections!;
+              sharedCollections.sort((c1, c2) => int.parse(c1.creationTimestamp!).compareTo(int.parse(c2.creationTimestamp!)));
               return ListView.builder(
                 itemCount: sharedCollections.length,
                 itemBuilder: (context, index) => Padding(

@@ -13,6 +13,7 @@ class Image {
   List<ScoredLabel>? scoredLabels;
   List<Collection>? containedInCollections;
   User? owner;
+  String? creationTimestamp;
 
   Image();
 
