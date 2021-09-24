@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
 import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
+import 'package:pictive_app_mvp/data/image/image.dart' as appimg;
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
 import 'package:pictive_app_mvp/state/app/app_state.dart';
@@ -26,6 +29,7 @@ class _PopulateImageGridState extends State<PopulateImageGrid> {
           collections {
             images {
               payload
+              creationTimestamp
             }
           }
         }
@@ -45,7 +49,7 @@ class _PopulateImageGridState extends State<PopulateImageGrid> {
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (previous, current) {
         final bool needsRebuild =
-            current.expandedCollectionsOverview[widget.collectionID]!;
+        current.expandedCollectionsOverview[widget.collectionID]!;
         if (needsRebuild) {
           this._populateImagesFuture = _performQuery();
         }
@@ -61,20 +65,28 @@ class _PopulateImageGridState extends State<PopulateImageGrid> {
             } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasData) {
               final Collection collection =
-                  _extractCollectionBag(snapshot.data!).collections![0];
+              _extractCollectionBag(snapshot.data!).collections![0];
               if (collection.images?.isEmpty ?? true) {
                 return const Text("No images yet.");
               }
+              final List<appimg.Image> images = collection.images!;
+              images.sort((i1, i2) =>
+                  int.parse(i1.creationTimestamp!).compareTo(
+                      int.parse(i2.creationTimestamp!)));
               return ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                  maxHeight: MediaQuery.of(context).size.height * 0.7,
                 ),
                 child: GridView.count(
-                  crossAxisCount: 3,
-                  scrollDirection: Axis.horizontal,
-                  children: collection.images!
-                      .map((image) => Image.memory(base64.decode(image.payload!)))
-                      .toList(),
+                    crossAxisCount: 3,
+                    physics: ScrollPhysics(),
+                    shrinkWrap: true,
+                    children: images
+                    // TODO Image MemoryImage(Uint8List#e2a18) has a display size of 202×202 but a decode size of 960×1280, which uses an additional 6186KB.
+                    // Consider resizing the asset ahead of time, supplying a cacheWidth parameter of 202, a cacheHeight parameter of 202, or using a ResizeImage.
+                        .map((image) =>
+                        Image.memory(base64.decode(image.payload!)))
+                        .toList(),
                 ),
               );
             }

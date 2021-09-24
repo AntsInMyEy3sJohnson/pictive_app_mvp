@@ -64,7 +64,6 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
             } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasData) {
               final User user = _extractUserBag(snapshot.data!).users![0];
-              // TODO Add sorting -- descending according to creation timestamp
               final List<Collection> sharedCollections =
                   user.sharedCollections!;
               sharedCollections.sort((c1, c2) => int.parse(c1.creationTimestamp!).compareTo(int.parse(c2.creationTimestamp!)));
