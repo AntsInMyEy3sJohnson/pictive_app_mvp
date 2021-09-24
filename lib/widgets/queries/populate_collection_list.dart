@@ -92,4 +92,5 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
         _GET_USER_SHARED_COLLECTIONS,
         <String, dynamic>{'mail': widget.userMail});
   }
+
 }

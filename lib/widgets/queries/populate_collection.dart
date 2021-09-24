@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
 import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
+import 'package:pictive_app_mvp/routes/image_grid_page.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
-import 'package:pictive_app_mvp/state/app/app_state.dart';
-import 'package:pictive_app_mvp/state/app/events/collection_collapsed.dart';
-import 'package:pictive_app_mvp/state/app/events/collection_expanded.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
-import 'package:pictive_app_mvp/widgets/queries/populate_image_grid.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PopulateCollection extends StatefulWidget {
   final String collectionID;
@@ -31,6 +28,8 @@ class _PopulateCollectionState extends State<PopulateCollection> {
           displayName
           images {
             id
+            payload
+            creationTimestamp
           }
           owner {
             id
@@ -58,21 +57,6 @@ class _PopulateCollectionState extends State<PopulateCollection> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
-      buildWhen: (previous, current) {
-        final bool newExpanded =
-            current.expandedCollectionsOverview[widget.collectionID]!;
-        final bool needsRebuild = _expanded !=
-            current.expandedCollectionsOverview[widget.collectionID]!;
-        _expanded = newExpanded;
-        _tileIcon =
-            _expanded ? _TILE_ICON_WHEN_EXPANDED : _TILE_ICON_WHEN_COLLAPSED;
-        if (needsRebuild && _expanded) {
-          _getCollectionByIdFuture = _performQuery();
-        }
-        return needsRebuild;
-      },
-      builder: (context, state) {
         return FutureBuilder<QueryResult>(
           future: _getCollectionByIdFuture,
           initialData: QueryResult.unexecuted,
@@ -99,22 +83,18 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                       ),
                       title: Text("${collection.displayName}"),
                       trailing: ElevatedButton(
-                        onPressed: _processExpandButtonPressed,
+                        onPressed: _processShowCollectionButtonPressed,
                         child: Icon(_tileIcon),
                         style: ElevatedButton.styleFrom(shape: CircleBorder()),
                       ),
                     ),
                   ),
-                  if (state.isCollectionExpanded(widget.collectionID))
-                    PopulateImageGrid(widget.collectionID),
                 ],
               );
             }
             return const Icon(Icons.error);
           },
         );
-      },
-    );
   }
 
   CollectionBag _extractCollectionBag(QueryResult queryResult) {
@@ -127,11 +107,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
         <String, dynamic>{'id': widget.collectionID});
   }
 
-  void _processExpandButtonPressed() {
-    if (!_expanded) {
-      _appBloc.add(CollectionExpanded(widget.collectionID));
-    } else {
-      _appBloc.add(CollectionCollapsed(widget.collectionID));
-    }
+  void _processShowCollectionButtonPressed() {
+    Navigator.pushNamed(context, ImageGridPage.ROUTE_ID, arguments: widget.collectionID);
   }
 }

@@ -44,7 +44,7 @@ class _OverviewPageState extends State<OverviewPage> {
       appBar: AppBar(
         title: const Text("Pictive"),
         actions: [
-          // Disable this button if no pictures are currently present
+          // TODO Disable this button if no images are currently present
           IconButton(
               icon: Icon(Icons.filter_alt_outlined),
               onPressed: () => print("Filter button pressed"))
