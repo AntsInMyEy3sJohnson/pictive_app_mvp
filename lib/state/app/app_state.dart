@@ -24,7 +24,7 @@ class AppState extends Equatable {
   AppState withActivatedCollection(String collectionID) {
     final Map<String, bool> activeCollectionsOverview =
         Map.from(this.activeCollectionsOverview);
-    _addAndExpandCollection(collectionID, activeCollectionsOverview);
+    _activateCollection(collectionID, activeCollectionsOverview);
     return AppState(generation + 1, this.defaultCollectionID, this.collectionIDs,
         activeCollectionsOverview);
   }
@@ -51,7 +51,7 @@ class AppState extends Equatable {
     collectionIDs.add(collectionID);
     final Map<String, bool> activeCollectionsOverview =
         Map.from(this.activeCollectionsOverview);
-    _addAndExpandCollection(collectionID, activeCollectionsOverview);
+    _activateCollection(collectionID, activeCollectionsOverview);
     return AppState(generation + 1, this.defaultCollectionID, collectionIDs,
         activeCollectionsOverview);
   }
@@ -66,7 +66,7 @@ class AppState extends Equatable {
     return this.activeCollectionsOverview[collectionID] ?? false;
   }
 
-  void _addAndExpandCollection(
+  void _activateCollection(
       String collectionID, Map<String, bool> activeCollectionsOverview) {
     activeCollectionsOverview.updateAll((key, value) => false);
     activeCollectionsOverview[collectionID] = true;

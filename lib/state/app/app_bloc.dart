@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pictive_app_mvp/state/app/app_state.dart';
 import 'package:pictive_app_mvp/state/app/events/app_event.dart';
-import 'package:pictive_app_mvp/state/app/events/collection_deactivated.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_activated.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_created.dart';
 import 'package:pictive_app_mvp/state/app/events/default_collection_retrieved.dart';
@@ -20,14 +19,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       yield await _mapCollectionCreatedToAppState(event);
     } else if (event is CollectionActivated) {
       yield await _mapCollectionActivatedToAppState(event);
-    } else if (event is CollectionDeactivated) {
-      yield await _mapCollectionDeactivatedToAppState(event);
     }
-  }
-
-  Future<AppState> _mapCollectionDeactivatedToAppState(
-      CollectionDeactivated collectionDeactivated) async {
-    return state.withDeactivatedCollection(collectionDeactivated.collectionID);
   }
 
   Future<AppState> _mapCollectionActivatedToAppState(

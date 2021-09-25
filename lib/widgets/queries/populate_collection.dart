@@ -6,6 +6,8 @@ import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/routes/image_grid_page.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
+import 'package:pictive_app_mvp/state/app/app_state.dart';
+import 'package:pictive_app_mvp/state/app/events/collection_activated.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
 
 class PopulateCollection extends StatefulWidget {
@@ -46,6 +48,15 @@ class _PopulateCollectionState extends State<PopulateCollection> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<AppBloc, AppState>(
+      buildWhen: (previous, current) {
+        final bool newActiveState =
+            current.activeCollectionsOverview[widget.collectionID]!;
+        final bool needsRebuild = newActiveState != _active;
+        _active = newActiveState;
+        return needsRebuild;
+      },
+      builder: (context, state) {
         return FutureBuilder<QueryResult>(
           future: _getCollectionByIdFuture,
           initialData: QueryResult.unexecuted,
@@ -58,27 +69,30 @@ class _PopulateCollectionState extends State<PopulateCollection> {
               final Collection collection =
                   _extractCollectionBag(snapshot.data!).collections![0];
               final Size size = MediaQuery.of(context).size;
-              final double horizontalPadding = _active ? size.width * 0.02 : size.width * 0.03;
+              final double horizontalPadding =
+                  _active ? size.width * 0.02 : size.width * 0.03;
               return Padding(
-                padding: EdgeInsets.symmetric(vertical: size.height * 0.001, horizontal: horizontalPadding),
+                padding: EdgeInsets.symmetric(
+                    vertical: size.height * 0.001,
+                    horizontal: horizontalPadding),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DecoratedBox(
                       decoration: BoxDecoration(
-                        color: const Color(0xffffb551),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          if (_active)
-                            BoxShadow(
-                              color: const Color(0xfffddbb8),
-                              spreadRadius: 1,
-                              blurRadius: 1,
-                              offset: const Offset(3, 5),
-                            )
-                        ]
-                      ),
+                          color: const Color(0xffffb551),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            if (_active)
+                              BoxShadow(
+                                color: const Color(0xffffdb97),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: const Offset(3, 5),
+                              )
+                          ]),
                       child: ListTile(
+                        onTap: _changeCollectionActiveState,
                         leading: Container(
                           decoration: BoxDecoration(shape: BoxShape.circle),
                           // Enable user to pick a thumbnail for the collection
@@ -86,9 +100,11 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                         ),
                         title: Text("${collection.displayName}"),
                         trailing: ElevatedButton(
-                          onPressed: () => _processShowCollectionButtonPressed(collection.id!, collection.displayName!),
+                          onPressed: () => _processShowCollectionButtonPressed(
+                              collection.id!, collection.displayName!),
                           child: const Icon(_TILE_ICON),
-                          style: ElevatedButton.styleFrom(shape: CircleBorder()),
+                          style:
+                              ElevatedButton.styleFrom(shape: CircleBorder()),
                         ),
                       ),
                     ),
@@ -99,6 +115,17 @@ class _PopulateCollectionState extends State<PopulateCollection> {
             return const Icon(Icons.error);
           },
         );
+      },
+    );
+  }
+
+  void _changeCollectionActiveState() {
+    if (!_active) {
+      // In case of a collection activation, all other collections have to be deactivated
+      _appBloc.add(CollectionActivated(widget.collectionID));
+    }
+    // Do nothing in case '_active' is true -- the collection has already been
+    // active, so it can't be activated again
   }
 
   CollectionBag _extractCollectionBag(QueryResult queryResult) {
@@ -111,7 +138,9 @@ class _PopulateCollectionState extends State<PopulateCollection> {
         <String, dynamic>{'id': widget.collectionID});
   }
 
-  void _processShowCollectionButtonPressed(String collectionID, String collectionName) {
-    Navigator.pushNamed(context, ImageGridPage.ROUTE_ID, arguments: [collectionID, collectionName]);
+  void _processShowCollectionButtonPressed(
+      String collectionID, String collectionName) {
+    Navigator.pushNamed(context, ImageGridPage.ROUTE_ID,
+        arguments: [collectionID, collectionName]);
   }
 }
