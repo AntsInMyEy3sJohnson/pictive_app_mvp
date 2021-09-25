@@ -16,8 +16,9 @@ class ImageGridPage extends StatefulWidget {
   static const String ROUTE_ID = "/imagegrid";
 
   final String collectionID;
+  final String collectionName;
 
-  const ImageGridPage(this.collectionID);
+  const ImageGridPage(this.collectionID, this.collectionName);
 
   @override
   _ImageGridPageState createState() => _ImageGridPageState();
@@ -51,7 +52,7 @@ class _ImageGridPageState extends State<ImageGridPage> {
     return Scaffold(
       appBar: AppBar(
         // TODO Display collection name here
-        title: Text(widget.collectionID),
+        title: Text(widget.collectionName),
         actions: [
           IconButton(onPressed: () => print("Search button was pressed"), icon: Icon(Icons.search))
         ],

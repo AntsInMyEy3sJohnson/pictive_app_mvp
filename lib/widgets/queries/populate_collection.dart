@@ -26,14 +26,6 @@ class _PopulateCollectionState extends State<PopulateCollection> {
         collections {
           id
           displayName
-          images {
-            id
-            payload
-            creationTimestamp
-          }
-          owner {
-            id
-          }
         }
       }
     }
@@ -83,7 +75,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                       ),
                       title: Text("${collection.displayName}"),
                       trailing: ElevatedButton(
-                        onPressed: _processShowCollectionButtonPressed,
+                        onPressed: () => _processShowCollectionButtonPressed(collection.id!, collection.displayName!),
                         child: Icon(_tileIcon),
                         style: ElevatedButton.styleFrom(shape: CircleBorder()),
                       ),
@@ -107,7 +99,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
         <String, dynamic>{'id': widget.collectionID});
   }
 
-  void _processShowCollectionButtonPressed() {
-    Navigator.pushNamed(context, ImageGridPage.ROUTE_ID, arguments: widget.collectionID);
+  void _processShowCollectionButtonPressed(String collectionID, String collectionName) {
+    Navigator.pushNamed(context, ImageGridPage.ROUTE_ID, arguments: [collectionID, collectionName]);
   }
 }

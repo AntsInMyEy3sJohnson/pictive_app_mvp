@@ -16,7 +16,8 @@ class RouteGenerator {
       case OverviewPage.ROUTE_ID:
         return MaterialPageRoute(builder: (_) => const OverviewPage());
       case ImageGridPage.ROUTE_ID:
-        return _withPageRouteBuilder(ImageGridPage(routeSettings.arguments.toString()), routeSettings);
+        final List<String> args = routeSettings.arguments as List<String>;
+        return _withPageRouteBuilder(ImageGridPage(args[0], args[1]), routeSettings);
       default:
         throw RouteException("No such route: ${routeSettings.name}");
     }
