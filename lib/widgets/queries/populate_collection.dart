@@ -18,8 +18,8 @@ class PopulateCollection extends StatefulWidget {
 }
 
 class _PopulateCollectionState extends State<PopulateCollection> {
-  static const IconData _TILE_ICON_WHEN_INACTIVE = Icons.keyboard_arrow_right;
-  static const IconData _TILE_ICON_WHEN_ACTIVE = Icons.keyboard_arrow_down;
+  // TODO Represent IconData as constants in other classes, too
+  static const IconData _TILE_ICON = Icons.keyboard_arrow_right;
   static const String _GET_COLLECTION_BY_ID_QUERY = r'''
     query GetCollectionByID($id: ID!) {
       getCollectionByID(id: $id) {
@@ -33,7 +33,6 @@ class _PopulateCollectionState extends State<PopulateCollection> {
 
   late final AppBloc _appBloc;
   late bool _active;
-  late IconData _tileIcon;
 
   Future<QueryResult>? _getCollectionByIdFuture;
 
@@ -43,8 +42,6 @@ class _PopulateCollectionState extends State<PopulateCollection> {
     _getCollectionByIdFuture = _performQuery();
     _appBloc = context.read<AppBloc>();
     _active = _appBloc.state.isCollectionActive(widget.collectionID);
-    _tileIcon =
-        _active ? _TILE_ICON_WHEN_ACTIVE : _TILE_ICON_WHEN_INACTIVE;
   }
 
   @override
@@ -60,28 +57,43 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                 snapshot.hasData) {
               final Collection collection =
                   _extractCollectionBag(snapshot.data!).collections![0];
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                    ),
-                    child: ListTile(
-                      leading: Container(
-                        decoration: BoxDecoration(shape: BoxShape.circle),
-                        // Enable user to pick a thumbnail for the collection
-                        child: Icon(Icons.image),
+              final Size size = MediaQuery.of(context).size;
+              final double horizontalPadding = _active ? size.width * 0.02 : size.width * 0.03;
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: size.height * 0.001, horizontal: horizontalPadding),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xffffb551),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          if (_active)
+                            BoxShadow(
+                              color: const Color(0xfffddbb8),
+                              spreadRadius: 1,
+                              blurRadius: 1,
+                              offset: const Offset(3, 5),
+                            )
+                        ]
                       ),
-                      title: Text("${collection.displayName}"),
-                      trailing: ElevatedButton(
-                        onPressed: () => _processShowCollectionButtonPressed(collection.id!, collection.displayName!),
-                        child: Icon(_tileIcon),
-                        style: ElevatedButton.styleFrom(shape: CircleBorder()),
+                      child: ListTile(
+                        leading: Container(
+                          decoration: BoxDecoration(shape: BoxShape.circle),
+                          // Enable user to pick a thumbnail for the collection
+                          child: Icon(Icons.image),
+                        ),
+                        title: Text("${collection.displayName}"),
+                        trailing: ElevatedButton(
+                          onPressed: () => _processShowCollectionButtonPressed(collection.id!, collection.displayName!),
+                          child: const Icon(_TILE_ICON),
+                          style: ElevatedButton.styleFrom(shape: CircleBorder()),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }
             return const Icon(Icons.error);

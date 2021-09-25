@@ -51,7 +51,10 @@ class _OverviewPageState extends State<OverviewPage> {
         ],
       ),
       body: Center(
-        child: PopulateCollectionList(_userBloc.state.mail!),
+        child: Padding(
+          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.01),
+          child: PopulateCollectionList(_userBloc.state.mail!),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Row(

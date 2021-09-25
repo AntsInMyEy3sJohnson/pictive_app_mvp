@@ -29,12 +29,12 @@ class MyApp extends StatelessWidget {
           backgroundColor: const Color(0x0),
           elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-            primary: const Color(0xffffb300),
-            shadowColor: const Color(0xffc68400),
+            primary: const Color(0xffffc32c),
+            shadowColor: const Color(0xffaa00c7),
           )),
           floatingActionButtonTheme: FloatingActionButtonThemeData(
-            foregroundColor: const Color(0xffc68400),
-            backgroundColor: const Color(0xffffb300),
+            foregroundColor: const Color(0xffff79ff),
+            backgroundColor: const Color(0xffaa00c7),
           ),
         ),
         onGenerateTitle: (context) => "Pictive",
