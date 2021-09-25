@@ -60,7 +60,7 @@ class _ImageGridPageState extends State<ImageGridPage> {
       body: BlocBuilder<AppBloc, AppState>(
         buildWhen: (previous, current) {
           final bool needsRebuild =
-          current.expandedCollectionsOverview[widget.collectionID]!;
+          current.activeCollectionsOverview[widget.collectionID]!;
           if (needsRebuild) {
             this._populateImagesFuture = _performQuery();
           }

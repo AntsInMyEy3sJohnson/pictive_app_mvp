@@ -174,7 +174,7 @@ class _OverviewPageState extends State<OverviewPage> {
   }
 
   String evaluateTargetCollection() {
-    return _appBloc.state.getExpandedCollectionID() ??
+    return _appBloc.state.getIdOfActiveCollection() ??
         _userBloc.state.defaultCollection!.id!;
   }
 

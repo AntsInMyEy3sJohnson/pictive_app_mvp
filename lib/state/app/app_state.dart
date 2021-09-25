@@ -4,72 +4,72 @@ class AppState extends Equatable {
   final int generation;
   final String defaultCollectionID;
   final List<String> collectionIDs;
-  final Map<String, bool> expandedCollectionsOverview;
+  final Map<String, bool> activeCollectionsOverview;
 
   const AppState(this.generation, this.defaultCollectionID, this.collectionIDs,
-      this.expandedCollectionsOverview);
+      this.activeCollectionsOverview);
 
   factory AppState.dummyState() {
     return AppState(0, "", List.empty(growable: true), <String, bool>{});
   }
 
-  AppState withCollapsedCollection(String collectionID) {
-    final Map<String, bool> expandedCollapsedCollectionIDs =
-        Map.from(this.expandedCollectionsOverview);
-    expandedCollapsedCollectionIDs[collectionID] = false;
+  AppState withDeactivatedCollection(String collectionID) {
+    final Map<String, bool> activeCollectionsOverview =
+        Map.from(this.activeCollectionsOverview);
+    activeCollectionsOverview[collectionID] = false;
     return AppState(generation + 1, this.defaultCollectionID, this.collectionIDs,
-        expandedCollapsedCollectionIDs);
+        activeCollectionsOverview);
   }
 
-  AppState withExpandedCollection(String collectionID) {
-    final Map<String, bool> expandedCollectionsOverview =
-        Map.from(this.expandedCollectionsOverview);
-    _addAndExpandCollection(collectionID, expandedCollectionsOverview);
+  AppState withActivatedCollection(String collectionID) {
+    final Map<String, bool> activeCollectionsOverview =
+        Map.from(this.activeCollectionsOverview);
+    _addAndExpandCollection(collectionID, activeCollectionsOverview);
     return AppState(generation + 1, this.defaultCollectionID, this.collectionIDs,
-        expandedCollectionsOverview);
+        activeCollectionsOverview);
   }
 
-  AppState withAddedCollectionsAndExpandedDefaultCollection(
+  AppState withAddedCollectionsAndActivatedDefaultCollection(
       List<String> newCollectionIDs, String defaultCollectionID) {
     final List<String> collectionIDs = List.from(this.collectionIDs);
     collectionIDs.addAll(newCollectionIDs);
-    final Map<String, bool> expandedCollectionsOverview =
-        Map.from(this.expandedCollectionsOverview);
+    final Map<String, bool> activeCollectionsOverview =
+        Map.from(this.activeCollectionsOverview);
     newCollectionIDs.forEach((element) {
       if (element == defaultCollectionID) {
-        expandedCollectionsOverview[element] = true;
+        activeCollectionsOverview[element] = true;
       } else {
-        expandedCollectionsOverview[element] = false;
+        activeCollectionsOverview[element] = false;
       }
     });
     return AppState(generation + 1, defaultCollectionID, collectionIDs,
-        expandedCollectionsOverview);
+        activeCollectionsOverview);
   }
 
-  AppState withAddedAndExpandedCollection(String collectionID) {
+  AppState withAddedAndActivatedCollection(String collectionID) {
     final List<String> collectionIDs = List.of(this.collectionIDs);
     collectionIDs.add(collectionID);
-    final Map<String, bool> expandedCollectionsOverview =
-        Map.from(this.expandedCollectionsOverview);
-    _addAndExpandCollection(collectionID, expandedCollectionsOverview);
+    final Map<String, bool> activeCollectionsOverview =
+        Map.from(this.activeCollectionsOverview);
+    _addAndExpandCollection(collectionID, activeCollectionsOverview);
     return AppState(generation + 1, this.defaultCollectionID, collectionIDs,
-        expandedCollectionsOverview);
+        activeCollectionsOverview);
   }
 
-  String? getExpandedCollectionID() {
-    return this.expandedCollectionsOverview.keys.firstWhere(
-        (element) => expandedCollectionsOverview[element]!,
+  String? getIdOfActiveCollection() {
+    return this.activeCollectionsOverview.keys.firstWhere(
+        (element) => activeCollectionsOverview[element]!,
         orElse: () => this.defaultCollectionID);
   }
 
-  bool isCollectionExpanded(String collectionID) {
-    return this.expandedCollectionsOverview[collectionID] ?? false;
+  bool isCollectionActive(String collectionID) {
+    return this.activeCollectionsOverview[collectionID] ?? false;
   }
 
   void _addAndExpandCollection(
-      String collectionID, Map<String, bool> expandedCollectionsOverview) {
-    expandedCollectionsOverview.updateAll((key, value) => false);
-    expandedCollectionsOverview[collectionID] = true;
+      String collectionID, Map<String, bool> activeCollectionsOverview) {
+    activeCollectionsOverview.updateAll((key, value) => false);
+    activeCollectionsOverview[collectionID] = true;
   }
 
   @override

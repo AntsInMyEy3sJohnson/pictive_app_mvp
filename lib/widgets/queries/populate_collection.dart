@@ -18,8 +18,8 @@ class PopulateCollection extends StatefulWidget {
 }
 
 class _PopulateCollectionState extends State<PopulateCollection> {
-  static const IconData _TILE_ICON_WHEN_COLLAPSED = Icons.keyboard_arrow_right;
-  static const IconData _TILE_ICON_WHEN_EXPANDED = Icons.keyboard_arrow_down;
+  static const IconData _TILE_ICON_WHEN_INACTIVE = Icons.keyboard_arrow_right;
+  static const IconData _TILE_ICON_WHEN_ACTIVE = Icons.keyboard_arrow_down;
   static const String _GET_COLLECTION_BY_ID_QUERY = r'''
     query GetCollectionByID($id: ID!) {
       getCollectionByID(id: $id) {
@@ -32,7 +32,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
     ''';
 
   late final AppBloc _appBloc;
-  late bool _expanded;
+  late bool _active;
   late IconData _tileIcon;
 
   Future<QueryResult>? _getCollectionByIdFuture;
@@ -42,9 +42,9 @@ class _PopulateCollectionState extends State<PopulateCollection> {
     super.initState();
     _getCollectionByIdFuture = _performQuery();
     _appBloc = context.read<AppBloc>();
-    _expanded = _appBloc.state.isCollectionExpanded(widget.collectionID);
+    _active = _appBloc.state.isCollectionActive(widget.collectionID);
     _tileIcon =
-        _expanded ? _TILE_ICON_WHEN_EXPANDED : _TILE_ICON_WHEN_COLLAPSED;
+        _active ? _TILE_ICON_WHEN_ACTIVE : _TILE_ICON_WHEN_INACTIVE;
   }
 
   @override
