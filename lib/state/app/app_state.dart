@@ -78,6 +78,15 @@ class AppState extends Equatable {
     );
   }
 
+  AppState withNextGeneration() {
+    return AppState(
+      generation + 1,
+      defaultCollectionID,
+      collectionIDs,
+      activeCollectionsOverview,
+    );
+  }
+
   String? getIdOfActiveCollection() {
     return activeCollectionsOverview.keys.firstWhere(
       (element) => activeCollectionsOverview[element]!,

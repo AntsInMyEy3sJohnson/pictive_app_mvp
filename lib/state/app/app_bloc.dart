@@ -47,7 +47,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Future<AppState> _mapImagesAddedToCollectionToAppState(
     ImagesAddedToCollection imagesAddedToCollection,
   ) async {
-    return state
-        .withAddedAndActivatedCollection(imagesAddedToCollection.collectionID);
+    return state.withNextGeneration();
   }
 }

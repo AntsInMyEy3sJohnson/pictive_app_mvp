@@ -178,7 +178,7 @@ class _RegisterUserState extends State<_RegisterUser> {
             snapshot.hasData) {
           Future.delayed(
             const Duration(milliseconds: 200),
-                () => _onRegistrationComplete(snapshot.data!),
+            () => _onRegistrationComplete(snapshot.data!),
           );
           return const SizedButtonChild(
             Icon(
@@ -212,4 +212,3 @@ class _RegisterUserState extends State<_RegisterUser> {
     Navigator.pushReplacementNamed(context, LoginPage.routeID);
   }
 }
-
