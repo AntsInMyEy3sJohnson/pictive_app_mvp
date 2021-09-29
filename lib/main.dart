@@ -12,12 +12,13 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<UserBloc>(create: (_) => UserBloc(User()),),
+        BlocProvider<UserBloc>(
+          create: (_) => UserBloc(User()),
+        ),
         BlocProvider<AppBloc>(create: (_) => AppBloc(AppState.dummyState())),
       ],
       child: MaterialApp(
@@ -26,22 +27,22 @@ class MyApp extends StatelessWidget {
           primaryColorLight: const Color(0xffff79ff),
           primaryColorDark: const Color(0xffaa00c7),
           accentColor: const Color(0xffbdbdbd),
-          backgroundColor: const Color(0x0),
+          backgroundColor: const Color(0x00000000),
           elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-            primary: const Color(0xffffc32c),
-            shadowColor: const Color(0xffaa00c7),
-          )),
-          floatingActionButtonTheme: FloatingActionButtonThemeData(
-            foregroundColor: const Color(0xffff79ff),
-            backgroundColor: const Color(0xffaa00c7),
+            style: ElevatedButton.styleFrom(
+              primary: const Color(0xffffc32c),
+              shadowColor: const Color(0xffaa00c7),
+            ),
+          ),
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            foregroundColor: Color(0xffff79ff),
+            backgroundColor: Color(0xffaa00c7),
           ),
         ),
         onGenerateTitle: (context) => "Pictive",
-        initialRoute: LoginPage.ROUTE_ID,
+        initialRoute: LoginPage.routeID,
         onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );
   }
 }
-

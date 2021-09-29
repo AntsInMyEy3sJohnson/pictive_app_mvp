@@ -23,22 +23,30 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   Future<AppState> _mapCollectionActivatedToAppState(
-      CollectionActivated collectionActivated) async {
+    CollectionActivated collectionActivated,
+  ) async {
     return state.withActivatedCollection(collectionActivated.collectionID);
   }
 
   Future<AppState> _mapCollectionCreatedToAppState(
-      CollectionCreated collectionCreated) async {
-    return state.withAddedAndActivatedCollection(collectionCreated.collectionID);
+    CollectionCreated collectionCreated,
+  ) async {
+    return state
+        .withAddedAndActivatedCollection(collectionCreated.collectionID);
   }
 
   Future<AppState> _mapCollectionsRetrievedToAppState(
-      CollectionsRetrieved collectionsRetrieved) async {
-    return state.withAddedCollectionsAndActivatedDefaultCollection(collectionsRetrieved.collectionIDs, collectionsRetrieved.defaultCollectionID);
+    CollectionsRetrieved collectionsRetrieved,
+  ) async {
+    return state.withAddedCollectionsAndActivatedDefaultCollection(
+      collectionsRetrieved.collectionIDs,
+      collectionsRetrieved.defaultCollectionID,
+    );
   }
 
   Future<AppState> _mapImagesAddedToCollectionToAppState(
-      ImagesAddedToCollection imagesAddedToCollection) async {
+    ImagesAddedToCollection imagesAddedToCollection,
+  ) async {
     return state
         .withAddedAndActivatedCollection(imagesAddedToCollection.collectionID);
   }

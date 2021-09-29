@@ -17,7 +17,7 @@ import 'package:pictive_app_mvp/widgets/loading_overlay.dart';
 import 'package:pictive_app_mvp/widgets/queries/populate_collection_list.dart';
 
 class OverviewPage extends StatefulWidget {
-  static const String ROUTE_ID = "/overview";
+  static const String routeID = "/overview";
 
   const OverviewPage();
 
@@ -46,13 +46,15 @@ class _OverviewPageState extends State<OverviewPage> {
         actions: [
           // TODO Disable this button if no images are currently present
           IconButton(
-              icon: Icon(Icons.filter_alt_outlined),
-              onPressed: () => print("Filter button pressed"))
+            icon: const Icon(Icons.filter_alt_outlined),
+            onPressed: () {},
+          )
         ],
       ),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.01),
+          padding:
+              EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.01),
           child: PopulateCollectionList(_userBloc.state.mail!),
         ),
       ),
@@ -62,60 +64,64 @@ class _OverviewPageState extends State<OverviewPage> {
         children: [
           FloatingActionButton(
             tooltip: "Create a new collection",
-            child: const Icon(Icons.collections),
             onPressed: _processCreateNewCollectionButtonPressed,
             heroTag: "createNewCollectionFab",
+            child: const Icon(Icons.collections),
           ),
-          Flexible(child: FractionallySizedBox(widthFactor: 0.02)),
+          const Flexible(
+            child: FractionallySizedBox(widthFactor: 0.02),
+          ),
           FloatingActionButton(
             tooltip: "Select images from your gallery",
-            child: const Icon(Icons.photo),
             onPressed: _processSelectImagesButtonPressed,
             heroTag: "pickMultiImageFromGalleryFab",
+            child: const Icon(Icons.photo),
           ),
-          Flexible(child: FractionallySizedBox(widthFactor: 0.02)),
+          const Flexible(child: FractionallySizedBox(widthFactor: 0.02)),
           FloatingActionButton(
             tooltip: "Take a picture with your phone's camera",
-            child: const Icon(Icons.camera_alt),
             onPressed: _processTakePictureButtonPressed,
             heroTag: "takePicturesWithCameraFab",
+            child: const Icon(Icons.camera_alt),
           ),
-          Flexible(child: FractionallySizedBox(widthFactor: 0.06)),
+          const Flexible(
+            child: FractionallySizedBox(widthFactor: 0.06),
+          ),
         ],
       ),
     );
   }
 
-  void _processCreateNewCollectionButtonPressed() async {
-    final String? collectionName = await DialogHelper<String>()
+  Future<void> _processCreateNewCollectionButtonPressed() async {
+    final String? collectionName = await const DialogHelper<String>()
         .show(context, const CreateNewCollectionDialog());
     if (collectionName != null) {
-      final QueryResult queryResult = await LoadingOverlay.of(context)
-          .during(GClientWrapper.getInstance().performMutation(
-        _createCollectionMutation(),
-        <String, dynamic>{
-          'ownerID': _userBloc.state.id,
-          'displayName': collectionName,
-          'pin': 0000,
-          'nonOwnersCanShare': false,
-          'nonOwnersCanWrite': false,
-        },
-      ));
+      final QueryResult queryResult = await LoadingOverlay.of(context).during(
+        GClientWrapper.getInstance().performMutation(
+          _createCollectionMutation(),
+          <String, dynamic>{
+            'ownerID': _userBloc.state.id,
+            'displayName': collectionName,
+            'pin': 0000,
+            'nonOwnersCanShare': false,
+            'nonOwnersCanWrite': false,
+          },
+        ),
+      );
       _processNewCollectionCreated(queryResult);
     }
   }
 
   void _processNewCollectionCreated(QueryResult queryResult) {
     if (queryResult.hasException) {
-      print(
-          "Encountered exception during collection creation: ${queryResult.exception.toString()}");
       return;
     }
     final CollectionBag collectionBag =
         _extractCollectionBag(queryResult, "createCollection");
     final String collectionName = collectionBag.collections![0].displayName!;
     _appBloc.add(
-        CollectionCreated(collectionBag.collections![0].id!, collectionName));
+      CollectionCreated(collectionBag.collections![0].id!, collectionName),
+    );
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Column(
@@ -129,41 +135,49 @@ class _OverviewPageState extends State<OverviewPage> {
   }
 
   CollectionBag _extractCollectionBag(
-      QueryResult queryResult, String payloadEntryNode) {
-    return CollectionBag.fromJson(queryResult.data![payloadEntryNode] as Map<String, dynamic>);
+    QueryResult queryResult,
+    String payloadEntryNode,
+  ) {
+    return CollectionBag.fromJson(
+      queryResult.data![payloadEntryNode] as Map<String, dynamic>,
+    );
   }
 
-  void _processSelectImagesButtonPressed() async {
+  Future<void> _processSelectImagesButtonPressed() async {
     try {
       final List<XFile>? xfiles = await _imagePicker.pickMultiImage();
       if (xfiles == null) {
-        print("Received null list of images from image picker.");
+        debugPrint("Received null list of images from image picker.");
         return;
       }
       await LoadingOverlay.of(context).during(
-          _uploadImagesToCollection(evaluateTargetCollection(), xfiles));
+        _uploadImagesToCollection(evaluateTargetCollection(), xfiles),
+      );
     } catch (e) {
-      print("Error while attempting to pick images: $e");
+      debugPrint("Error while attempting to pick images: $e");
     }
   }
 
-  void _processTakePictureButtonPressed() async {
+  Future<void> _processTakePictureButtonPressed() async {
     try {
       final XFile? xfile =
           await _imagePicker.pickImage(source: ImageSource.camera);
       if (xfile == null) {
-        print("Received null image from image picker.");
+        debugPrint("Received null image from image picker.");
         return;
       }
       await LoadingOverlay.of(context).during(
-          _uploadImagesToCollection(evaluateTargetCollection(), [xfile]));
+        _uploadImagesToCollection(evaluateTargetCollection(), [xfile]),
+      );
     } catch (e) {
-      print("An error occurred while attempting to take a picture: $e");
+      debugPrint("An error occurred while attempting to take a picture: $e");
     }
   }
 
   Future<void> _uploadImagesToCollection(
-      String collectionID, List<XFile> xfiles) async {
+    String collectionID,
+    List<XFile> xfiles,
+  ) async {
     final List<String> base64Payloads = await _generateBase64Payloads(xfiles);
     _processUploadResult(
       collectionID,
@@ -183,12 +197,12 @@ class _OverviewPageState extends State<OverviewPage> {
 
   Future<List<String>> _generateBase64Payloads(List<XFile> xfiles) async {
     final List<String> base64Payloads = List.empty(growable: true);
-    for (XFile xfile in xfiles) {
+    for (final XFile xfile in xfiles) {
       final imagelib.Image? image =
           imagelib.decodeImage(await xfile.readAsBytes());
       if (image == null) {
         // TODO Add logging
-        print("Unknown error while processing image.");
+        debugPrint("Unknown error while processing image.");
         return base64Payloads;
       }
       final List<int> pngInts = imagelib.encodePng(image);
@@ -199,8 +213,9 @@ class _OverviewPageState extends State<OverviewPage> {
 
   void _processUploadResult(String collectionID, QueryResult queryResult) {
     if (queryResult.hasException) {
-      print(
-          "Encountered exception during image upload: ${queryResult.exception.toString()}");
+      debugPrint(
+        "Encountered exception during image upload: ${queryResult.exception.toString()}",
+      );
       return;
     }
     _appBloc.add(ImagesAddedToCollection(collectionID));
@@ -208,8 +223,8 @@ class _OverviewPageState extends State<OverviewPage> {
       SnackBar(
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text("Images successfully uploaded."),
+          children: const [
+            Text("Images successfully uploaded."),
           ],
         ),
       ),

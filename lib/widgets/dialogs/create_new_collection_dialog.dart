@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pictive_app_mvp/input_validation/generic_input_validation.dart';
 
 class CreateNewCollectionDialog extends StatefulWidget {
-
   const CreateNewCollectionDialog();
 
   @override
@@ -40,18 +39,21 @@ class _CreateNewCollectionDialogState extends State<CreateNewCollectionDialog> {
             TextFormField(
               controller: _collectionNameController,
               keyboardType: TextInputType.text,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(), hintText: "Collection name"),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Collection name",
+              ),
               validator: _validateCollectionName,
             ),
             ButtonBar(
               children: [
                 TextButton(
-                    onPressed: _processAbort,
-                    child: const Text(
-                      "Abort",
-                      textAlign: TextAlign.end,
-                    )),
+                  onPressed: _processAbort,
+                  child: const Text(
+                    "Abort",
+                    textAlign: TextAlign.end,
+                  ),
+                ),
                 TextButton(
                   onPressed: _processConfirm,
                   child: const Text(
@@ -68,7 +70,7 @@ class _CreateNewCollectionDialogState extends State<CreateNewCollectionDialog> {
   }
 
   void _processConfirm() {
-    if(_formKey.currentState?.validate() ?? false) {
+    if (_formKey.currentState?.validate() ?? false) {
       Navigator.pop(context, _collectionNameController.text);
     }
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class LoginRegisterBody extends StatelessWidget {
-
   final GlobalKey<FormState> formKey;
   final List<Widget> inputElements;
   final Widget submitWidget;
@@ -14,7 +13,6 @@ class LoginRegisterBody extends StatelessWidget {
       widthFactor: 0.8,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Form(
             key: formKey,
@@ -28,5 +26,4 @@ class LoginRegisterBody extends StatelessWidget {
       ),
     );
   }
-
 }

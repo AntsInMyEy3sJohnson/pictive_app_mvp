@@ -20,7 +20,7 @@ class PopulateCollectionList extends StatefulWidget {
 }
 
 class _PopulateCollectionListState extends State<PopulateCollectionList> {
-  static const String _GET_USER_SHARED_COLLECTIONS = r'''
+  static const String _getUserSharedCollections = r'''
       query UserSharedCollections($mail: String!) {
         getUserByMail(mail: $mail) {
           users {
@@ -50,7 +50,7 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
         final bool needsRebuild =
             current.collectionIDs.length > previous.collectionIDs.length;
         if (needsRebuild) {
-          this._getUserSharedCollectionsFuture = _performQuery();
+          _getUserSharedCollectionsFuture = _performQuery();
         }
         return needsRebuild;
       },
@@ -60,18 +60,22 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
           builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
             if (snapshot.connectionState == ConnectionState.none ||
                 snapshot.connectionState == ConnectionState.waiting) {
-              return CenteredCircularProgressIndicator();
+              return const CenteredCircularProgressIndicator();
             } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasData) {
               final User user = _extractUserBag(snapshot.data!).users![0];
               final List<Collection> sharedCollections =
                   user.sharedCollections!;
-              sharedCollections.sort((c1, c2) => int.parse(c1.creationTimestamp!).compareTo(int.parse(c2.creationTimestamp!)));
+              sharedCollections.sort(
+                (c1, c2) => int.parse(c1.creationTimestamp!)
+                    .compareTo(int.parse(c2.creationTimestamp!)),
+              );
               return ListView.builder(
                 itemCount: sharedCollections.length,
                 itemBuilder: (context, index) => Padding(
                   padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.of(context).size.height * 0.005),
+                    vertical: MediaQuery.of(context).size.height * 0.005,
+                  ),
                   child: PopulateCollection(sharedCollections[index].id!),
                 ),
               );
@@ -84,13 +88,15 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
   }
 
   UserBag _extractUserBag(QueryResult queryResult) {
-    return UserBag.fromJson(queryResult.data!["getUserByMail"] as Map<String, dynamic>);
+    return UserBag.fromJson(
+      queryResult.data!["getUserByMail"] as Map<String, dynamic>,
+    );
   }
 
   Future<QueryResult> _performQuery() {
     return GClientWrapper.getInstance().performQuery(
-        _GET_USER_SHARED_COLLECTIONS,
-        <String, dynamic>{'mail': widget.userMail});
+      _getUserSharedCollections,
+      <String, dynamic>{'mail': widget.userMail},
+    );
   }
-
 }

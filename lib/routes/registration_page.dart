@@ -5,7 +5,7 @@ import 'package:pictive_app_mvp/widgets/mutations/register_user.dart';
 import 'package:pictive_app_mvp/widgets/relative_vertical_sized_box.dart';
 
 class RegistrationPage extends StatefulWidget {
-  static const String ROUTE_ID = "/register";
+  static const String routeID = "/register";
 
   const RegistrationPage();
 
@@ -44,8 +44,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                      hintText: "Mail", border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    hintText: "Mail",
+                    border: OutlineInputBorder(),
+                  ),
                   validator: _validateMail,
                 ),
                 const RelativeVerticalSizedBox(),
@@ -53,7 +55,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   controller: _passwordController,
                   keyboardType: TextInputType.text,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Password",
                     border: OutlineInputBorder(),
                   ),
@@ -64,7 +66,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   controller: _passwordRepetitionController,
                   keyboardType: TextInputType.text,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Repeat password",
                     border: OutlineInputBorder(),
                   ),
@@ -81,7 +83,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     )
                   : ElevatedButton(
                       onPressed: _onRegistrationTriggered,
-                      child: const Text("Register")),
+                      child: const Text("Register"),
+                    ),
             ),
           ],
         ),

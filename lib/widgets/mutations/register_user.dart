@@ -16,7 +16,7 @@ class RegisterUser extends StatefulWidget {
 }
 
 class _RegisterUserState extends State<RegisterUser> {
-  static const String _CREATE_USER_MUTATION = r'''
+  static const String _createUserMutation = r'''
     mutation CreateUserWithDefaultCollection($mail: String!, $password: String!) {
       createUserWithDefaultCollection(mail: $mail, password: $password) {
         users {
@@ -45,8 +45,9 @@ class _RegisterUserState extends State<RegisterUser> {
   void initState() {
     super.initState();
     _createUserFuture = GClientWrapper.getInstance().performMutation(
-        _CREATE_USER_MUTATION,
-        <String, dynamic>{'mail': widget.email, 'password': widget.password});
+      _createUserMutation,
+      <String, dynamic>{'mail': widget.email, 'password': widget.password},
+    );
   }
 
   @override
@@ -59,9 +60,11 @@ class _RegisterUserState extends State<RegisterUser> {
           return const SizedButtonChild(CenteredCircularProgressIndicator());
         } else if (snapshot.connectionState == ConnectionState.done &&
             snapshot.hasData) {
-          Future.delayed(Duration(milliseconds: 200),
-              () => _onRegistrationComplete(snapshot.data!));
-          return SizedButtonChild(
+          Future.delayed(
+            const Duration(milliseconds: 200),
+            () => _onRegistrationComplete(snapshot.data!),
+          );
+          return const SizedButtonChild(
             Icon(
               Icons.check,
               color: Colors.white,
@@ -73,21 +76,23 @@ class _RegisterUserState extends State<RegisterUser> {
     );
   }
 
-  void _onRegistrationComplete(QueryResult queryResult) async {
+  Future<void> _onRegistrationComplete(QueryResult queryResult) async {
     await showDialog(
       barrierDismissible: false,
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Success!"),
         content: const Text(
-            "Registration successful. You can now log in with your email address and password."),
+          "Registration successful. You can now log in with your email address and password.",
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Got it!")),
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Got it!"),
+          ),
         ],
       ),
     );
-    Navigator.pushReplacementNamed(context, LoginPage.ROUTE_ID);
+    Navigator.pushReplacementNamed(context, LoginPage.routeID);
   }
 }

@@ -6,7 +6,7 @@ import 'package:pictive_app_mvp/widgets/queries/log_in_user.dart';
 import 'package:pictive_app_mvp/widgets/relative_vertical_sized_box.dart';
 
 class LoginPage extends StatefulWidget {
-  static const String ROUTE_ID = "/";
+  static const String routeID = "/";
 
   const LoginPage();
 
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Mail",
                     border: OutlineInputBorder(),
                   ),
@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _passwordController,
                   keyboardType: TextInputType.text,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Password",
                     border: OutlineInputBorder(),
                   ),
@@ -63,17 +63,20 @@ class _LoginPageState extends State<LoginPage> {
               ],
               _loginTriggered
                   ? ElevatedButton(
-                      onPressed: null, child: LogInUser(_emailController.text))
+                      onPressed: null,
+                      child: LogInUser(_emailController.text),
+                    )
                   : ElevatedButton(
-                      child: const Text("Login"),
                       onPressed: _performLogin,
+                      child: const Text("Login"),
                     ),
             ),
             const RelativeVerticalSizedBox(multiplier: 0.03),
             const Text("Don't have an account yet?"),
             ElevatedButton(
-                onPressed: _navigateToRegistration,
-                child: const Text("Register now!"))
+              onPressed: _navigateToRegistration,
+              child: const Text("Register now!"),
+            )
           ],
         ),
       ),
@@ -81,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _navigateToRegistration() {
-    Navigator.pushNamed(context, RegistrationPage.ROUTE_ID);
+    Navigator.pushNamed(context, RegistrationPage.routeID);
   }
 
   void _performLogin() {

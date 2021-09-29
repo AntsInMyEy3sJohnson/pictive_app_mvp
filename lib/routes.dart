@@ -9,14 +9,14 @@ class RouteGenerator {
 
   static Route<dynamic> generateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
-      case LoginPage.ROUTE_ID:
+      case LoginPage.routeID:
         return MaterialPageRoute(builder: (_) => const LoginPage());
-      case RegistrationPage.ROUTE_ID:
+      case RegistrationPage.routeID:
         return MaterialPageRoute(builder: (_) => const RegistrationPage());
-      case OverviewPage.ROUTE_ID:
+      case OverviewPage.routeID:
         return MaterialPageRoute(builder: (_) => const OverviewPage());
-      case ImageGridPage.ROUTE_ID:
-        final List<String> args = routeSettings.arguments as List<String>;
+      case ImageGridPage.routeID:
+        final List<String> args = routeSettings.arguments! as List<String>;
         return _withPageRouteBuilder(ImageGridPage(args[0], args[1]), routeSettings);
       default:
         throw RouteException("No such route: ${routeSettings.name}");

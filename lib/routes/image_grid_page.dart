@@ -12,7 +12,6 @@ import 'package:pictive_app_mvp/state/app/app_state.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
 
 class ImageGridPage extends StatefulWidget {
-
   static const String routeID = "/imagegrid";
 
   final String collectionID;
@@ -25,8 +24,7 @@ class ImageGridPage extends StatefulWidget {
 }
 
 class _ImageGridPageState extends State<ImageGridPage> {
-
-  static const String _GET_COLLECTION_BY_ID_WITH_IMAGE_PAYLOADS_QUERY = r'''
+  static const String _getCollectionByIdWithImagePayloadsQuery = r'''
       query GetImagePayloadsInCollection($collectionID: ID!) {
         getCollectionByID(id: $collectionID) {
           collections {
@@ -53,44 +51,48 @@ class _ImageGridPageState extends State<ImageGridPage> {
       appBar: AppBar(
         // TODO Display collection name here
         title: Text(widget.collectionName),
-        actions: [
-          IconButton(onPressed: () => print("Search button was pressed"), icon: Icon(Icons.search))
-        ],
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
       ),
       body: BlocBuilder<AppBloc, AppState>(
         buildWhen: (previous, current) {
           final bool needsRebuild =
-          current.activeCollectionsOverview[widget.collectionID]!;
+              current.activeCollectionsOverview[widget.collectionID]!;
           if (needsRebuild) {
-            this._populateImagesFuture = _performQuery();
+            _populateImagesFuture = _performQuery();
           }
           return needsRebuild;
         },
         builder: (context, state) {
           return FutureBuilder<QueryResult>(
             future: _populateImagesFuture,
-            builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
               if (snapshot.connectionState == ConnectionState.none ||
                   snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: const CenteredCircularProgressIndicator());
+                return const Center(child: CenteredCircularProgressIndicator());
               } else if (snapshot.connectionState == ConnectionState.done &&
                   snapshot.hasData) {
                 final Collection collection =
-                _extractCollectionBag(snapshot.data!).collections![0];
+                    _extractCollectionBag(snapshot.data!).collections![0];
                 if (collection.images?.isEmpty ?? true) {
                   return const Text("No images yet.");
                 }
                 final List<appimg.Image> images = collection.images!;
-                images.sort((i1, i2) =>
-                    int.parse(i1.creationTimestamp!).compareTo(
-                        int.parse(i2.creationTimestamp!)));
+                images.sort(
+                  (i1, i2) => int.parse(i1.creationTimestamp!).compareTo(
+                    int.parse(i2.creationTimestamp!),
+                  ),
+                );
                 return GridView.count(
                   crossAxisCount: 3,
                   children: images
-                  // TODO Image MemoryImage(Uint8List#e2a18) has a display size of 202×202 but a decode size of 960×1280, which uses an additional 6186KB.
-                  // Consider resizing the asset ahead of time, supplying a cacheWidth parameter of 202, a cacheHeight parameter of 202, or using a ResizeImage.
-                      .map((image) =>
-                      Image.memory(base64.decode(image.payload!)))
+                      // TODO Image MemoryImage(Uint8List#e2a18) has a display size of 202×202 but a decode size of 960×1280, which uses an additional 6186KB.
+                      // Consider resizing the asset ahead of time, supplying a cacheWidth parameter of 202, a cacheHeight parameter of 202, or using a ResizeImage.
+                      .map(
+                        (image) => Image.memory(
+                          base64.decode(image.payload!),
+                        ),
+                      )
                       .toList(),
                 );
               }
@@ -104,12 +106,14 @@ class _ImageGridPageState extends State<ImageGridPage> {
 
   Future<QueryResult> _performQuery() {
     return GClientWrapper.getInstance().performQuery(
-        _GET_COLLECTION_BY_ID_WITH_IMAGE_PAYLOADS_QUERY,
-        <String, dynamic>{'collectionID': widget.collectionID});
+      _getCollectionByIdWithImagePayloadsQuery,
+      <String, dynamic>{'collectionID': widget.collectionID},
+    );
   }
 
   CollectionBag _extractCollectionBag(QueryResult queryResult) {
-    return CollectionBag.fromJson(queryResult.data!["getCollectionByID"] as Map<String, dynamic>);
+    return CollectionBag.fromJson(
+      queryResult.data!["getCollectionByID"] as Map<String, dynamic>,
+    );
   }
-
 }

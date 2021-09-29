@@ -8,13 +8,10 @@ class CenteredCircularProgressIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          child: CircularProgressIndicator(
-            color: Colors.grey,
-            backgroundColor: Colors.white,
-          ),
+      children: const [
+        CircularProgressIndicator(
+          color: Colors.grey,
+          backgroundColor: Colors.white,
         ),
       ],
     );

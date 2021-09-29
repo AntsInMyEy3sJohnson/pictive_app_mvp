@@ -1,4 +1,3 @@
-
 import 'package:graphql/client.dart';
 
 class GClientWrapper {
@@ -17,7 +16,9 @@ class GClientWrapper {
   }
 
   Future<QueryResult> performQuery(
-      String query, Map<String, dynamic> variables) async {
+    String query,
+    Map<String, dynamic> variables,
+  ) async {
     final QueryOptions queryOptions = QueryOptions(
       document: gql(query),
       variables: variables,
@@ -27,11 +28,12 @@ class GClientWrapper {
   }
 
   Future<QueryResult> performMutation(
-      String mutation, Map<String, dynamic> variables) async {
+    String mutation,
+    Map<String, dynamic> variables,
+  ) async {
     final MutationOptions mutationOptions =
         MutationOptions(document: gql(mutation), variables: variables);
 
     return _graphQLClient.mutate(mutationOptions);
   }
-
 }

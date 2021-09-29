@@ -21,8 +21,8 @@ class PopulateCollection extends StatefulWidget {
 
 class _PopulateCollectionState extends State<PopulateCollection> {
   // TODO Represent IconData as constants in other classes, too
-  static const IconData _TILE_ICON = Icons.keyboard_arrow_right;
-  static const String _GET_COLLECTION_BY_ID_QUERY = r'''
+  static const IconData _tileIcon = Icons.keyboard_arrow_right;
+  static const String _getCollectionByIdQuery = r'''
     query GetCollectionByID($id: ID!) {
       getCollectionByID(id: $id) {
         collections {
@@ -73,38 +73,44 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                   _active ? size.width * 0.02 : size.width * 0.03;
               return Padding(
                 padding: EdgeInsets.symmetric(
-                    vertical: size.height * 0.001,
-                    horizontal: horizontalPadding),
+                  vertical: size.height * 0.001,
+                  horizontal: horizontalPadding,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DecoratedBox(
                       decoration: BoxDecoration(
-                          color: const Color(0xffffb551),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            if (_active)
-                              BoxShadow(
-                                color: const Color(0xffffdb97),
-                                spreadRadius: 1,
-                                blurRadius: 1,
-                                offset: const Offset(3, 5),
-                              )
-                          ]),
+                        color: const Color(0xffffb551),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          if (_active)
+                            const BoxShadow(
+                              color: Color(0xffffdb97),
+                              spreadRadius: 1,
+                              blurRadius: 1,
+                              offset: Offset(3, 5),
+                            )
+                        ],
+                      ),
                       child: ListTile(
                         onTap: _changeCollectionActiveState,
                         leading: Container(
-                          decoration: BoxDecoration(shape: BoxShape.circle),
+                          decoration:
+                              const BoxDecoration(shape: BoxShape.circle),
                           // Enable user to pick a thumbnail for the collection
-                          child: Icon(Icons.image),
+                          child: const Icon(Icons.image),
                         ),
                         title: Text("${collection.displayName}"),
                         trailing: ElevatedButton(
                           onPressed: () => _processShowCollectionButtonPressed(
-                              collection.id!, collection.displayName!),
-                          child: const Icon(_TILE_ICON),
-                          style:
-                              ElevatedButton.styleFrom(shape: CircleBorder()),
+                            collection.id!,
+                            collection.displayName!,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Icon(_tileIcon),
                         ),
                       ),
                     ),
@@ -129,18 +135,26 @@ class _PopulateCollectionState extends State<PopulateCollection> {
   }
 
   CollectionBag _extractCollectionBag(QueryResult queryResult) {
-    return CollectionBag.fromJson(queryResult.data!["getCollectionByID"] as Map<String, dynamic>);
+    return CollectionBag.fromJson(
+      queryResult.data!["getCollectionByID"] as Map<String, dynamic>,
+    );
   }
 
   Future<QueryResult> _performQuery() {
     return GClientWrapper.getInstance().performQuery(
-        _GET_COLLECTION_BY_ID_QUERY,
-        <String, dynamic>{'id': widget.collectionID});
+      _getCollectionByIdQuery,
+      <String, dynamic>{'id': widget.collectionID},
+    );
   }
 
   void _processShowCollectionButtonPressed(
-      String collectionID, String collectionName) {
-    Navigator.pushNamed(context, ImageGridPage.routeID,
-        arguments: [collectionID, collectionName]);
+    String collectionID,
+    String collectionName,
+  ) {
+    Navigator.pushNamed(
+      context,
+      ImageGridPage.routeID,
+      arguments: [collectionID, collectionName],
+    );
   }
 }
