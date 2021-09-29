@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
-import 'package:image/image.dart' as imagelib;
+import 'package:image/image.dart' as image_lib;
 import 'package:image_picker/image_picker.dart';
 import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
@@ -12,6 +12,7 @@ import 'package:pictive_app_mvp/data/user/user_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
 import 'package:pictive_app_mvp/state/app/app_state.dart';
+import 'package:pictive_app_mvp/state/app/events/collection_activated.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_created.dart';
 import 'package:pictive_app_mvp/state/app/events/images_added_to_collection.dart';
 import 'package:pictive_app_mvp/state/user/user_bloc.dart';
@@ -19,7 +20,8 @@ import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dar
 import 'package:pictive_app_mvp/widgets/dialogs/create_new_collection_dialog.dart';
 import 'package:pictive_app_mvp/widgets/dialogs/dialog_helper.dart';
 import 'package:pictive_app_mvp/widgets/loading_overlay.dart';
-import 'package:pictive_app_mvp/widgets/queries/populate_collection.dart';
+
+import 'image_grid_page.dart';
 
 class OverviewPage extends StatefulWidget {
   static const String routeID = "/overview";
@@ -203,14 +205,14 @@ class _OverviewPageState extends State<OverviewPage> {
   Future<List<String>> _generateBase64Payloads(List<XFile> xfiles) async {
     final List<String> base64Payloads = List.empty(growable: true);
     for (final XFile xfile in xfiles) {
-      final imagelib.Image? image =
-          imagelib.decodeImage(await xfile.readAsBytes());
+      final image_lib.Image? image =
+          image_lib.decodeImage(await xfile.readAsBytes());
       if (image == null) {
         // TODO Add logging
         debugPrint("Unknown error while processing image.");
         return base64Payloads;
       }
-      final List<int> pngInts = imagelib.encodePng(image);
+      final List<int> pngInts = image_lib.encodePng(image);
       base64Payloads.add(base64.encode(pngInts));
     }
     return base64Payloads;
@@ -329,7 +331,7 @@ class _PopulateCollectionListState extends State<_PopulateCollectionList> {
                   padding: EdgeInsets.symmetric(
                     vertical: MediaQuery.of(context).size.height * 0.005,
                   ),
-                  child: PopulateCollection(sharedCollections[index].id!),
+                  child: _PopulateCollection(sharedCollections[index].id!),
                 ),
               );
             }
@@ -350,6 +352,155 @@ class _PopulateCollectionListState extends State<_PopulateCollectionList> {
     return GClientWrapper.getInstance().performQuery(
       _getUserSharedCollections,
       <String, dynamic>{'mail': widget.userMail},
+    );
+  }
+}
+
+class _PopulateCollection extends StatefulWidget {
+  final String collectionID;
+
+  const _PopulateCollection(this.collectionID);
+
+  @override
+  _PopulateCollectionState createState() => _PopulateCollectionState();
+}
+
+class _PopulateCollectionState extends State<_PopulateCollection> {
+  // TODO Represent IconData as constants in other classes, too
+  static const IconData _tileIcon = Icons.keyboard_arrow_right;
+  static const String _getCollectionByIdQuery = r'''
+    query GetCollectionByID($id: ID!) {
+      getCollectionByID(id: $id) {
+        collections {
+          id
+          displayName
+        }
+      }
+    }
+    ''';
+
+  late final AppBloc _appBloc;
+  late bool _active;
+
+  Future<QueryResult>? _getCollectionByIdFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCollectionByIdFuture = _performQuery();
+    _appBloc = context.read<AppBloc>();
+    _active = _appBloc.state.isCollectionActive(widget.collectionID);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AppBloc, AppState>(
+      buildWhen: (previous, current) {
+        final bool newActiveState =
+            current.activeCollectionsOverview[widget.collectionID]!;
+        final bool needsRebuild = newActiveState != _active;
+        _active = newActiveState;
+        return needsRebuild;
+      },
+      builder: (context, state) {
+        return FutureBuilder<QueryResult>(
+          future: _getCollectionByIdFuture,
+          initialData: QueryResult.unexecuted,
+          builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
+            if (snapshot.connectionState == ConnectionState.none ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              return const CenteredCircularProgressIndicator();
+            } else if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData) {
+              final Collection collection =
+                  _extractCollectionBag(snapshot.data!).collections![0];
+              final Size size = MediaQuery.of(context).size;
+              final double horizontalPadding =
+                  _active ? size.width * 0.02 : size.width * 0.03;
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: size.height * 0.001,
+                  horizontal: horizontalPadding,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xffffb551),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          if (_active)
+                            const BoxShadow(
+                              color: Color(0xffffdb97),
+                              spreadRadius: 1,
+                              blurRadius: 1,
+                              offset: Offset(3, 5),
+                            )
+                        ],
+                      ),
+                      child: ListTile(
+                        onTap: _changeCollectionActiveState,
+                        leading: Container(
+                          decoration:
+                              const BoxDecoration(shape: BoxShape.circle),
+                          // Enable user to pick a thumbnail for the collection
+                          child: const Icon(Icons.image),
+                        ),
+                        title: Text("${collection.displayName}"),
+                        trailing: ElevatedButton(
+                          onPressed: () => _processShowCollectionButtonPressed(
+                            collection.id!,
+                            collection.displayName!,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Icon(_tileIcon),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return const Icon(Icons.error);
+          },
+        );
+      },
+    );
+  }
+
+  void _changeCollectionActiveState() {
+    if (!_active) {
+      // In case of a collection activation, all other collections have to be deactivated
+      _appBloc.add(CollectionActivated(widget.collectionID));
+    }
+    // Do nothing in case '_active' is true -- the collection has already been
+    // active, so it can't be activated again
+  }
+
+  CollectionBag _extractCollectionBag(QueryResult queryResult) {
+    return CollectionBag.fromJson(
+      queryResult.data!["getCollectionByID"] as Map<String, dynamic>,
+    );
+  }
+
+  Future<QueryResult> _performQuery() {
+    return GClientWrapper.getInstance().performQuery(
+      _getCollectionByIdQuery,
+      <String, dynamic>{'id': widget.collectionID},
+    );
+  }
+
+  void _processShowCollectionButtonPressed(
+    String collectionID,
+    String collectionName,
+  ) {
+    Navigator.pushNamed(
+      context,
+      ImageGridPage.routeID,
+      arguments: [collectionID, collectionName],
     );
   }
 }
