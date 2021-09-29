@@ -13,7 +13,7 @@ import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dar
 
 class ImageGridPage extends StatefulWidget {
 
-  static const String ROUTE_ID = "/imagegrid";
+  static const String routeID = "/imagegrid";
 
   final String collectionID;
   final String collectionName;
@@ -109,7 +109,7 @@ class _ImageGridPageState extends State<ImageGridPage> {
   }
 
   CollectionBag _extractCollectionBag(QueryResult queryResult) {
-    return CollectionBag.fromJson(queryResult.data!["getCollectionByID"]);
+    return CollectionBag.fromJson(queryResult.data!["getCollectionByID"] as Map<String, dynamic>);
   }
 
 }

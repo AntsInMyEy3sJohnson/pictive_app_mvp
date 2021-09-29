@@ -130,7 +130,7 @@ class _OverviewPageState extends State<OverviewPage> {
 
   CollectionBag _extractCollectionBag(
       QueryResult queryResult, String payloadEntryNode) {
-    return CollectionBag.fromJson(queryResult.data![payloadEntryNode]);
+    return CollectionBag.fromJson(queryResult.data![payloadEntryNode] as Map<String, dynamic>);
   }
 
   void _processSelectImagesButtonPressed() async {

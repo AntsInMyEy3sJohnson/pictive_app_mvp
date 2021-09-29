@@ -129,7 +129,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
   }
 
   CollectionBag _extractCollectionBag(QueryResult queryResult) {
-    return CollectionBag.fromJson(queryResult.data!["getCollectionByID"]);
+    return CollectionBag.fromJson(queryResult.data!["getCollectionByID"] as Map<String, dynamic>);
   }
 
   Future<QueryResult> _performQuery() {
@@ -140,7 +140,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
 
   void _processShowCollectionButtonPressed(
       String collectionID, String collectionName) {
-    Navigator.pushNamed(context, ImageGridPage.ROUTE_ID,
+    Navigator.pushNamed(context, ImageGridPage.routeID,
         arguments: [collectionID, collectionName]);
   }
 }

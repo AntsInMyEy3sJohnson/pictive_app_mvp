@@ -85,7 +85,7 @@ class _LogInUserState extends State<LogInUser> {
 
   void _onLoginComplete(QueryResult queryResult) async {
     final UserBag userBag =
-        UserBag.fromJson(queryResult.data!["getUserByMail"]);
+        UserBag.fromJson(queryResult.data!["getUserByMail"] as Map<String, dynamic>);
     final User user = userBag.users![0];
     _userBloc.add(UserLoggedIn(user));
     _appBloc.add(CollectionsRetrieved(

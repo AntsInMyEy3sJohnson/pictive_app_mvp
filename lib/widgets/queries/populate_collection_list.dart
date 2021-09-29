@@ -84,7 +84,7 @@ class _PopulateCollectionListState extends State<PopulateCollectionList> {
   }
 
   UserBag _extractUserBag(QueryResult queryResult) {
-    return UserBag.fromJson(queryResult.data!["getUserByMail"]);
+    return UserBag.fromJson(queryResult.data!["getUserByMail"] as Map<String, dynamic>);
   }
 
   Future<QueryResult> _performQuery() {
