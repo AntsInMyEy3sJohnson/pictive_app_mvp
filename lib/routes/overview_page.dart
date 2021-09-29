@@ -5,16 +5,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
 import 'package:image/image.dart' as imagelib;
 import 'package:image_picker/image_picker.dart';
+import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
+import 'package:pictive_app_mvp/data/user/user.dart';
+import 'package:pictive_app_mvp/data/user/user_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
+import 'package:pictive_app_mvp/state/app/app_state.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_created.dart';
 import 'package:pictive_app_mvp/state/app/events/images_added_to_collection.dart';
 import 'package:pictive_app_mvp/state/user/user_bloc.dart';
+import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
 import 'package:pictive_app_mvp/widgets/dialogs/create_new_collection_dialog.dart';
 import 'package:pictive_app_mvp/widgets/dialogs/dialog_helper.dart';
 import 'package:pictive_app_mvp/widgets/loading_overlay.dart';
-import 'package:pictive_app_mvp/widgets/queries/populate_collection_list.dart';
+import 'package:pictive_app_mvp/widgets/queries/populate_collection.dart';
 
 class OverviewPage extends StatefulWidget {
   static const String routeID = "/overview";
@@ -55,7 +60,7 @@ class _OverviewPageState extends State<OverviewPage> {
         child: Padding(
           padding:
               EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.01),
-          child: PopulateCollectionList(_userBloc.state.mail!),
+          child: _PopulateCollectionList(_userBloc.state.mail!),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -255,5 +260,96 @@ class _OverviewPageState extends State<OverviewPage> {
       }
     }
     ''';
+  }
+}
+
+class _PopulateCollectionList extends StatefulWidget {
+  final String userMail;
+
+  const _PopulateCollectionList(this.userMail);
+
+  @override
+  _PopulateCollectionListState createState() => _PopulateCollectionListState();
+}
+
+class _PopulateCollectionListState extends State<_PopulateCollectionList> {
+  static const String _getUserSharedCollections = r'''
+      query UserSharedCollections($mail: String!) {
+        getUserByMail(mail: $mail) {
+          users {
+            id
+            sharedCollections {
+              id
+              defaultCollection
+              creationTimestamp
+            }
+          }
+        }
+      }
+  ''';
+
+  late Future<QueryResult> _getUserSharedCollectionsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserSharedCollectionsFuture = _performQuery();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AppBloc, AppState>(
+      buildWhen: (previous, current) {
+        final bool needsRebuild =
+            current.collectionIDs.length > previous.collectionIDs.length;
+        if (needsRebuild) {
+          _getUserSharedCollectionsFuture = _performQuery();
+        }
+        return needsRebuild;
+      },
+      builder: (context, state) {
+        return FutureBuilder<QueryResult>(
+          future: _getUserSharedCollectionsFuture,
+          builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
+            if (snapshot.connectionState == ConnectionState.none ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              return const CenteredCircularProgressIndicator();
+            } else if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData) {
+              final User user = _extractUserBag(snapshot.data!).users![0];
+              final List<Collection> sharedCollections =
+                  user.sharedCollections!;
+              sharedCollections.sort(
+                (c1, c2) => int.parse(c1.creationTimestamp!)
+                    .compareTo(int.parse(c2.creationTimestamp!)),
+              );
+              return ListView.builder(
+                itemCount: sharedCollections.length,
+                itemBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: MediaQuery.of(context).size.height * 0.005,
+                  ),
+                  child: PopulateCollection(sharedCollections[index].id!),
+                ),
+              );
+            }
+            return const Icon(Icons.error);
+          },
+        );
+      },
+    );
+  }
+
+  UserBag _extractUserBag(QueryResult queryResult) {
+    return UserBag.fromJson(
+      queryResult.data!["getUserByMail"] as Map<String, dynamic>,
+    );
+  }
+
+  Future<QueryResult> _performQuery() {
+    return GClientWrapper.getInstance().performQuery(
+      _getUserSharedCollections,
+      <String, dynamic>{'mail': widget.userMail},
+    );
   }
 }
