@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:graphql/client.dart';
 import 'package:image/image.dart' as image_lib;
 import 'package:image_picker/image_picker.dart';
@@ -425,38 +426,50 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: const Color(0xffffb551),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          if (_active)
-                            const BoxShadow(
-                              color: Color(0xffffdb97),
-                              spreadRadius: 1,
-                              blurRadius: 1,
-                              offset: Offset(3, 5),
-                            )
-                        ],
-                      ),
-                      child: ListTile(
-                        onTap: _changeCollectionActiveState,
-                        leading: Container(
-                          decoration:
-                              const BoxDecoration(shape: BoxShape.circle),
-                          // Enable user to pick a thumbnail for the collection
-                          child: const Icon(Icons.image),
+                    Slidable(
+                      actionPane: const SlidableDrawerActionPane(),
+                      actionExtentRatio: 0.3,
+                      actions: [
+                        IconSlideAction(
+                          caption: "Delete",
+                          color: Theme.of(context).colorScheme.background,
+                          icon: Icons.delete_forever,
+                        )
+                      ],
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: const Color(0xffffb551),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            if (_active)
+                              const BoxShadow(
+                                color: Color(0xffffdb97),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: Offset(3, 5),
+                              )
+                          ],
                         ),
-                        title: Text("${collection.displayName}"),
-                        trailing: ElevatedButton(
-                          onPressed: () => _processShowCollectionButtonPressed(
-                            collection.id!,
-                            collection.displayName!,
+                        child: ListTile(
+                          onTap: _changeCollectionActiveState,
+                          onLongPress: _toggleLongPressSelection,
+                          leading: Container(
+                            decoration:
+                                const BoxDecoration(shape: BoxShape.circle),
+                            // Enable user to pick a thumbnail for the collection
+                            child: const Icon(Icons.image),
                           ),
-                          style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(),
+                          title: Text("${collection.displayName}"),
+                          trailing: ElevatedButton(
+                            onPressed: () => _processShowCollectionButtonPressed(
+                              collection.id!,
+                              collection.displayName!,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                            ),
+                            child: const Icon(_tileIcon),
                           ),
-                          child: const Icon(_tileIcon),
                         ),
                       ),
                     ),
@@ -469,6 +482,10 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
         );
       },
     );
+  }
+
+  void _toggleLongPressSelection() {
+
   }
 
   void _changeCollectionActiveState() {

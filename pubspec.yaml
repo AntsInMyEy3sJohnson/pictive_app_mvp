@@ -26,6 +26,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^7.0.1 # State management
+  flutter_slidable: ^0.6.0 # Provides horizontal slide actions on widgets
   graphql: ^5.0.0 # GraphQL client ('graphql_flutter' caused problems, so going back to plain GraphQL client)
   image: ^3.0.2 # Manipulate images
   image_picker: ^0.8.2 # For letting the user import images into the app
