@@ -19,6 +19,7 @@ import 'package:pictive_app_mvp/state/app/events/images_added_to_collection.dart
 import 'package:pictive_app_mvp/state/user/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
 import 'package:pictive_app_mvp/widgets/dialogs/create_new_collection_dialog.dart';
+import 'package:pictive_app_mvp/widgets/dialogs/delete_collection_dialog.dart';
 import 'package:pictive_app_mvp/widgets/dialogs/dialog_helper.dart';
 import 'package:pictive_app_mvp/widgets/loading_overlay.dart';
 
@@ -375,6 +376,10 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
         collections {
           id
           displayName
+          defaultCollection
+          images {
+            id
+          }
         }
       }
     }
@@ -430,11 +435,13 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
                       actionPane: const SlidableDrawerActionPane(),
                       actionExtentRatio: 0.3,
                       actions: [
-                        IconSlideAction(
-                          caption: "Delete",
-                          color: Theme.of(context).colorScheme.background,
-                          icon: Icons.delete_forever,
-                        )
+                        if (!collection.defaultCollection!)
+                          IconSlideAction(
+                            caption: "Delete",
+                            color: Theme.of(context).colorScheme.background,
+                            icon: Icons.delete_forever,
+                            onTap: () => _processCollectionDeleteTapped(collection.id!, collection.displayName!, collection.images?.length ?? 0),
+                          )
                       ],
                       child: DecoratedBox(
                         decoration: BoxDecoration(
@@ -452,7 +459,6 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
                         ),
                         child: ListTile(
                           onTap: _changeCollectionActiveState,
-                          onLongPress: _toggleLongPressSelection,
                           leading: Container(
                             decoration:
                                 const BoxDecoration(shape: BoxShape.circle),
@@ -484,8 +490,12 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
     );
   }
 
-  void _toggleLongPressSelection() {
-
+  Future<void> _processCollectionDeleteTapped(String collectionID, String collectionName, int numImages) async {
+    final List<bool> deleteDesired = await const DialogHelper<List<bool>?>().show(context, DeleteCollectionDialog(collectionName, numImages)) ?? [];
+    if (deleteDesired.isNotEmpty && deleteDesired[0]) {
+      // TODO Implement collection deletion once mutation is available on server
+      debugPrint("${deleteDesired[0]}, ${deleteDesired[1]}");
+    }
   }
 
   void _changeCollectionActiveState() {
