@@ -421,10 +421,16 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (previous, current) {
+        if (!current.doesCollectionExist(widget.collectionID)) {
+          return false;
+        }
         final bool newActiveState =
             current.activeCollectionsOverview[widget.collectionID]!;
         final bool needsRebuild = newActiveState != _active;
         _active = newActiveState;
+        if (needsRebuild) {
+          _getCollectionByIdFuture = _performGetCollectionByIdQuery();
+        }
         return needsRebuild;
       },
       builder: (context, state) {

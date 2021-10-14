@@ -28,7 +28,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Future<AppState> _mapCollectionDeletedToAppState(
     CollectionDeleted collectionDeleted,
   ) async {
-    return state.withDeletedCollection(collectionDeleted.collectionID);
+    return state.withDeletedCollectionAndActivatedDefaultCollection(collectionDeleted.collectionID);
   }
 
   Future<AppState> _mapCollectionActivatedToAppState(
