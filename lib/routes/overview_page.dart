@@ -308,6 +308,7 @@ class _PopulateCollectionListState extends State<_PopulateCollectionList> {
         final bool needsRebuild =
             current.collectionIDs.length != previous.collectionIDs.length;
         if (needsRebuild) {
+          debugPrint("Rebuilding PopulateCollectionList");
           _getUserSharedCollectionsFuture = _performQuery();
         }
         return needsRebuild;
@@ -428,9 +429,9 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
             current.activeCollectionsOverview[widget.collectionID]!;
         final bool needsRebuild = newActiveState != _active;
         _active = newActiveState;
-        if (needsRebuild) {
-          _getCollectionByIdFuture = _performGetCollectionByIdQuery();
-        }
+        // Don't re-query Future in here, as this will lead to ugly visual
+        // effects in the list. Rather, if collection data needs to be refreshed,
+        // do so on-the-fly wherever it is required (e. g. collection deletion).
         return needsRebuild;
       },
       builder: (context, state) {
@@ -467,9 +468,6 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
                             icon: Icons.delete_forever,
                             onTap: () => _processCollectionDeleteTapped(
                               collection.id!,
-                              collection.displayName!,
-                              collection.images?.length ?? 0,
-                              collection.sharedWith!.length,
                             ),
                           )
                       ],
@@ -521,16 +519,24 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
     );
   }
 
-  Future<void> _processCollectionDeleteTapped(
-    String collectionID,
-    String collectionName,
-    int numImages,
-    int numSharedWith,
-  ) async {
+  Future<void> _processCollectionDeleteTapped(String collectionID) async {
+    final QueryResult getCollectionByIdResult =
+        await GClientWrapper.getInstance().performQuery(
+      _getCollectionByIdQuery,
+      <String, dynamic>{'id': widget.collectionID},
+    );
+    final Collection refreshedCollection =
+        _extractCollectionBag(getCollectionByIdResult).collections![0];
     final List<bool> shouldDeleteCollection =
         await const DialogHelper<List<bool>?>().show(
               context,
-              DeleteCollectionDialog(collectionName, numImages, numSharedWith),
+              DeleteCollectionDialog(
+                refreshedCollection.displayName!,
+                refreshedCollection.images?.length ?? 0,
+                // List of users a collection is shared with must always
+                // contain at least one user, namely, the collection owner
+                refreshedCollection.sharedWith!.length,
+              ),
             ) ??
             [];
     if (shouldDeleteCollection.isNotEmpty && shouldDeleteCollection[0]) {
