@@ -17,6 +17,20 @@ class AppState extends Equatable {
     return AppState(0, "", List.empty(growable: true), const <String, bool>{});
   }
 
+  AppState withDeletedCollection(String collectionID) {
+    final Map<String, bool> activeCollectionsOverview =
+        Map.from(this.activeCollectionsOverview);
+    activeCollectionsOverview.remove(collectionID);
+    final List<String> collectionIDs = List.from(this.collectionIDs);
+    collectionIDs.remove(collectionID);
+    return AppState(
+      generation + 1,
+      defaultCollectionID,
+      collectionIDs,
+      activeCollectionsOverview,
+    );
+  }
+
   AppState withDeactivatedCollection(String collectionID) {
     final Map<String, bool> activeCollectionsOverview =
         Map.from(this.activeCollectionsOverview);

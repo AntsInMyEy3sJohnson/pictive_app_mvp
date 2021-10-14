@@ -3,6 +3,7 @@ import 'package:pictive_app_mvp/state/app/app_state.dart';
 import 'package:pictive_app_mvp/state/app/events/app_event.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_activated.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_created.dart';
+import 'package:pictive_app_mvp/state/app/events/collection_deleted.dart';
 import 'package:pictive_app_mvp/state/app/events/default_collection_retrieved.dart';
 import 'package:pictive_app_mvp/state/app/events/images_added_to_collection.dart';
 
@@ -19,7 +20,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       yield await _mapCollectionCreatedToAppState(event);
     } else if (event is CollectionActivated) {
       yield await _mapCollectionActivatedToAppState(event);
+    } else if (event is CollectionDeleted) {
+      yield await _mapCollectionDeletedToAppState(event);
     }
+  }
+
+  Future<AppState> _mapCollectionDeletedToAppState(
+    CollectionDeleted collectionDeleted,
+  ) async {
+    return state.withDeletedCollection(collectionDeleted.collectionID);
   }
 
   Future<AppState> _mapCollectionActivatedToAppState(

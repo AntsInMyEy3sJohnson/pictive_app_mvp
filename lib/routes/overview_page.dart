@@ -15,6 +15,7 @@ import 'package:pictive_app_mvp/state/app/app_bloc.dart';
 import 'package:pictive_app_mvp/state/app/app_state.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_activated.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_created.dart';
+import 'package:pictive_app_mvp/state/app/events/collection_deleted.dart';
 import 'package:pictive_app_mvp/state/app/events/images_added_to_collection.dart';
 import 'package:pictive_app_mvp/state/user/user_bloc.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
@@ -305,7 +306,7 @@ class _PopulateCollectionListState extends State<_PopulateCollectionList> {
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (previous, current) {
         final bool needsRebuild =
-            current.collectionIDs.length > previous.collectionIDs.length;
+            current.collectionIDs.length != previous.collectionIDs.length;
         if (needsRebuild) {
           _getUserSharedCollectionsFuture = _performQuery();
         }
@@ -380,10 +381,28 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
           images {
             id
           }
+          sharedWith {
+            id
+          }
         }
       }
     }
     ''';
+  static const String _deleteCollectionByIdQuery = r'''
+    mutation DeleteCollection(
+      $collectionID: ID!
+      $deleteContainedImages: Boolean!
+    ) {
+      deleteCollection(
+        collectionID: $collectionID
+        deleteContainedImages: $deleteContainedImages
+      ) {
+        collections {
+          id
+        }
+      }
+    }
+  ''';
 
   late final AppBloc _appBloc;
   late bool _active;
@@ -393,7 +412,7 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
   @override
   void initState() {
     super.initState();
-    _getCollectionByIdFuture = _performQuery();
+    _getCollectionByIdFuture = _performGetCollectionByIdQuery();
     _appBloc = context.read<AppBloc>();
     _active = _appBloc.state.isCollectionActive(widget.collectionID);
   }
@@ -440,7 +459,12 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
                             caption: "Delete",
                             color: Theme.of(context).colorScheme.background,
                             icon: Icons.delete_forever,
-                            onTap: () => _processCollectionDeleteTapped(collection.id!, collection.displayName!, collection.images?.length ?? 0),
+                            onTap: () => _processCollectionDeleteTapped(
+                              collection.id!,
+                              collection.displayName!,
+                              collection.images?.length ?? 0,
+                              collection.sharedWith!.length,
+                            ),
                           )
                       ],
                       child: DecoratedBox(
@@ -467,7 +491,8 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
                           ),
                           title: Text("${collection.displayName}"),
                           trailing: ElevatedButton(
-                            onPressed: () => _processShowCollectionButtonPressed(
+                            onPressed: () =>
+                                _processShowCollectionButtonPressed(
                               collection.id!,
                               collection.displayName!,
                             ),
@@ -490,11 +515,31 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
     );
   }
 
-  Future<void> _processCollectionDeleteTapped(String collectionID, String collectionName, int numImages) async {
-    final List<bool> deleteDesired = await const DialogHelper<List<bool>?>().show(context, DeleteCollectionDialog(collectionName, numImages)) ?? [];
-    if (deleteDesired.isNotEmpty && deleteDesired[0]) {
-      // TODO Implement collection deletion once mutation is available on server
-      debugPrint("${deleteDesired[0]}, ${deleteDesired[1]}");
+  Future<void> _processCollectionDeleteTapped(
+    String collectionID,
+    String collectionName,
+    int numImages,
+    int numSharedWith,
+  ) async {
+    final List<bool> shouldDeleteCollection =
+        await const DialogHelper<List<bool>?>().show(
+              context,
+              DeleteCollectionDialog(collectionName, numImages, numSharedWith),
+            ) ??
+            [];
+    if (shouldDeleteCollection.isNotEmpty && shouldDeleteCollection[0]) {
+      debugPrint("${shouldDeleteCollection[0]}, ${shouldDeleteCollection[1]}");
+      final QueryResult deleteCollectionResult =
+          await LoadingOverlay.of(context).during(
+        _performDeleteCollectionByIdMutation(shouldDeleteCollection[1]),
+      );
+      if (deleteCollectionResult.hasException) {
+        debugPrint(
+          "Attempt to delete collection failed: ${deleteCollectionResult.exception}",
+        );
+        return;
+      }
+      _appBloc.add(CollectionDeleted(collectionID));
     }
   }
 
@@ -513,10 +558,22 @@ class _PopulateCollectionState extends State<_PopulateCollection> {
     );
   }
 
-  Future<QueryResult> _performQuery() {
+  Future<QueryResult> _performGetCollectionByIdQuery() {
     return GClientWrapper.getInstance().performQuery(
       _getCollectionByIdQuery,
       <String, dynamic>{'id': widget.collectionID},
+    );
+  }
+
+  Future<QueryResult> _performDeleteCollectionByIdMutation(
+    bool deleteContainedImages,
+  ) {
+    return GClientWrapper.getInstance().performQuery(
+      _deleteCollectionByIdQuery,
+      <String, dynamic>{
+        'collectionID': widget.collectionID,
+        'deleteContainedImages': deleteContainedImages
+      },
     );
   }
 

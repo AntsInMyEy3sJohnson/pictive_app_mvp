@@ -1,17 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pictive_app_mvp/widgets/sizable_text_field.dart';
 
 class DeleteCollectionDialog extends StatefulWidget {
   final String collectionName;
   final int numImages;
+  final int numSharedWith;
 
-  const DeleteCollectionDialog(this.collectionName, this.numImages);
+  const DeleteCollectionDialog(
+    this.collectionName,
+    this.numImages,
+    this.numSharedWith,
+  );
 
   @override
   State<DeleteCollectionDialog> createState() => _DeleteCollectionDialogState();
 }
 
 class _DeleteCollectionDialogState extends State<DeleteCollectionDialog> {
+  static const double _titleTextSizeWidthModifier = 0.04;
+  static const double _infoTextSizeWidthModifier = 0.037;
+
   bool _deleteContainedImages = false;
 
   @override
@@ -25,16 +34,17 @@ class _DeleteCollectionDialogState extends State<DeleteCollectionDialog> {
               vertical: MediaQuery.of(context).size.height * 0.02,
             ),
             // TODO What happens to this Text widget in case of a very long collection name?
-            child: Text(
+            child: SizableTextField(
               "Delete collection '${widget.collectionName}'?",
-              style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.04,
-                fontWeight: FontWeight.bold,
-              ),
+              _titleTextSizeWidthModifier,
+              fontWeight: FontWeight.bold,
             ),
           ),
           if (widget.numImages == 0)
-            const Text("This collection does not contain any images."),
+            const SizableTextField(
+              "This collection does not contain any images.",
+              _infoTextSizeWidthModifier,
+            ),
           if (widget.numImages > 0)
             CheckboxListTile(
               value: _deleteContainedImages,
@@ -43,12 +53,15 @@ class _DeleteCollectionDialogState extends State<DeleteCollectionDialog> {
                   _deleteContainedImages = newValue ?? false;
                 });
               },
-              title: Text(
+              title: SizableTextField(
                 "Delete ${widget.numImages} contained image/-s, too",
-                style: TextStyle(
-                  fontSize: MediaQuery.of(context).size.width * 0.037,
-                ),
+                0.037,
               ),
+            ),
+          if (widget.numSharedWith > 1)
+            SizableTextField(
+              "Caution! This collection is shared with ${widget.numSharedWith - 1} other users. They will lose access to this collection!",
+              _infoTextSizeWidthModifier,
             ),
           ButtonBar(
             children: [
