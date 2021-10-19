@@ -9,7 +9,8 @@ part of 'image.dart';
 Image _$ImageFromJson(Map<String, dynamic> json) {
   return Image()
     ..id = json['id'] as String?
-    ..payload = json['payload'] as String?
+    ..thumbnail = json['thumbnail'] as String?
+    ..content = json['content'] as String?
     ..extractedText = json['extractedText'] as String?
     ..scoredLabels = (json['scoredLabels'] as List<dynamic>?)
         ?.map((e) => ScoredLabel.fromJson(e as Map<String, dynamic>))
@@ -26,7 +27,8 @@ Image _$ImageFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$ImageToJson(Image instance) => <String, dynamic>{
       'id': instance.id,
-      'payload': instance.payload,
+      'thumbnail': instance.thumbnail,
+      'content': instance.content,
       'extractedText': instance.extractedText,
       'scoredLabels': instance.scoredLabels,
       'containedInCollections': instance.containedInCollections,

@@ -8,7 +8,8 @@ part 'image.g.dart';
 @JsonSerializable()
 class Image {
   String? id;
-  String? payload;
+  String? thumbnail;
+  String? content;
   String? extractedText;
   List<ScoredLabel>? scoredLabels;
   List<Collection>? containedInCollections;
