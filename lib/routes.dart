@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pictive_app_mvp/routes/image_grid_page.dart';
+import 'package:pictive_app_mvp/routes/queries/image_grid_page.dart';
 import 'package:pictive_app_mvp/routes/login_page.dart';
 import 'package:pictive_app_mvp/routes/overview_page.dart';
 import 'package:pictive_app_mvp/routes/registration_page.dart';

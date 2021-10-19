@@ -29,6 +29,7 @@ class _ImageGridPageState extends State<ImageGridPage> {
         getCollectionByID(id: $collectionID) {
           collections {
             images {
+              id
               thumbnail
               creationTimestamp
             }
@@ -49,7 +50,6 @@ class _ImageGridPageState extends State<ImageGridPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // TODO Display collection name here
         title: Text(widget.collectionName),
         actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
       ),
@@ -89,8 +89,11 @@ class _ImageGridPageState extends State<ImageGridPage> {
                       // TODO Image MemoryImage(Uint8List#e2a18) has a display size of 202×202 but a decode size of 960×1280, which uses an additional 6186KB.
                       // Consider resizing the asset ahead of time, supplying a cacheWidth parameter of 202, a cacheHeight parameter of 202, or using a ResizeImage.
                       .map(
-                        (image) => Image.memory(
-                          base64.decode(image.thumbnail!),
+                        (image) => GestureDetector(
+                          onTap: () => _processImageTapped(image.id!),
+                          child: Image.memory(
+                            base64.decode(image.thumbnail!),
+                          ),
                         ),
                       )
                       .toList(),
@@ -102,6 +105,10 @@ class _ImageGridPageState extends State<ImageGridPage> {
         },
       ),
     );
+  }
+
+  void _processImageTapped(String id) {
+
   }
 
   Future<QueryResult> _performQuery() {

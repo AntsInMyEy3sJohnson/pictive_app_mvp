@@ -5,7 +5,7 @@ import 'package:graphql/client.dart';
 import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
-import 'package:pictive_app_mvp/routes/image_grid_page.dart';
+import 'package:pictive_app_mvp/routes/queries/image_grid_page.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
 import 'package:pictive_app_mvp/state/app/app_state.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_activated.dart';
