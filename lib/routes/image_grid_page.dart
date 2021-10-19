@@ -29,7 +29,7 @@ class _ImageGridPageState extends State<ImageGridPage> {
         getCollectionByID(id: $collectionID) {
           collections {
             images {
-              payload
+              thumbnail
               creationTimestamp
             }
           }
@@ -90,7 +90,7 @@ class _ImageGridPageState extends State<ImageGridPage> {
                       // Consider resizing the asset ahead of time, supplying a cacheWidth parameter of 202, a cacheHeight parameter of 202, or using a ResizeImage.
                       .map(
                         (image) => Image.memory(
-                          base64.decode(image.content!),
+                          base64.decode(image.thumbnail!),
                         ),
                       )
                       .toList(),

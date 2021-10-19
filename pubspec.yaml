@@ -22,20 +22,17 @@ environment:
 
 dependencies:
   build_runner: ^2.1.0 # Creates '.g.dart' files from domain model classes
+  cupertino_icons: ^1.0.2
   equatable: ^2.0.0 # Helper to generate equals methods by simply extending 'Equatable'
   flutter:
     sdk: flutter
   flutter_bloc: ^7.0.1 # State management
   flutter_slidable: ^0.6.0 # Provides horizontal slide actions on widgets
   graphql: ^5.0.0 # GraphQL client ('graphql_flutter' caused problems, so going back to plain GraphQL client)
-  image: ^3.0.2 # Manipulate images
+  image: ^3.0.8 # Manipulate images
   image_picker: ^0.8.2 # For letting the user import images into the app
   json_annotation: ^4.0.0 # Provides annotations that support working with JSON data
   json_serializable: ^4.1.4 # Necessary for working with JSON data sent over the wire
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
