@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pictive_app_mvp/routes/queries/image_detail_page.dart';
 import 'package:pictive_app_mvp/routes/queries/image_grid_page.dart';
 import 'package:pictive_app_mvp/routes/login_page.dart';
 import 'package:pictive_app_mvp/routes/overview_page.dart';
@@ -18,6 +19,9 @@ class RouteGenerator {
       case ImageGridPage.routeID:
         final List<String> args = routeSettings.arguments! as List<String>;
         return _withPageRouteBuilder(ImageGridPage(args[0], args[1]), routeSettings);
+      case ImageDetailPage.routeID:
+        final String imageID = routeSettings.arguments! as String;
+        return MaterialPageRoute(builder: (_) => ImageDetailPage(imageID));
       default:
         throw RouteException("No such route: ${routeSettings.name}");
     }

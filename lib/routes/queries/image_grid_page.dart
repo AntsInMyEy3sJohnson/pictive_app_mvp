@@ -7,6 +7,7 @@ import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
 import 'package:pictive_app_mvp/data/image/image.dart' as appimg;
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
+import 'package:pictive_app_mvp/routes/queries/image_detail_page.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
 import 'package:pictive_app_mvp/state/app/app_state.dart';
 import 'package:pictive_app_mvp/widgets/centered_circular_progress_indicator.dart';
@@ -24,7 +25,7 @@ class ImageGridPage extends StatefulWidget {
 }
 
 class _ImageGridPageState extends State<ImageGridPage> {
-  static const String _getCollectionByIdWithImagePayloadsQuery = r'''
+  static const String _getCollectionByIdWithImageDataQuery = r'''
       query GetImagePayloadsInCollection($collectionID: ID!) {
         getCollectionByID(id: $collectionID) {
           collections {
@@ -108,12 +109,12 @@ class _ImageGridPageState extends State<ImageGridPage> {
   }
 
   void _processImageTapped(String id) {
-
+    Navigator.pushNamed(context, ImageDetailPage.routeID, arguments: id);
   }
 
   Future<QueryResult> _performQuery() {
     return GClientWrapper.getInstance().performQuery(
-      _getCollectionByIdWithImagePayloadsQuery,
+      _getCollectionByIdWithImageDataQuery,
       <String, dynamic>{'collectionID': widget.collectionID},
     );
   }
