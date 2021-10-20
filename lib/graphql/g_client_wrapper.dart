@@ -17,9 +17,9 @@ class GClientWrapper {
 
   Future<QueryResult> performQuery(
     String query,
-    Map<String, dynamic> variables,
-    {FetchPolicy fetchPolicy = FetchPolicy.cacheAndNetwork}
-  ) async {
+    Map<String, dynamic> variables, {
+    FetchPolicy fetchPolicy = FetchPolicy.cacheAndNetwork,
+  }) async {
     final QueryOptions queryOptions = QueryOptions(
       document: gql(query),
       variables: variables,
