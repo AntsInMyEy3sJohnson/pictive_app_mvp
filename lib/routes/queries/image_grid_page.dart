@@ -76,7 +76,14 @@ class _ImageGridPageState extends State<ImageGridPage> {
                 final Collection collection =
                     _extractCollectionBag(snapshot.data!).collections![0];
                 if (collection.images?.isEmpty ?? true) {
-                  return const Text("No images yet.");
+                  return Center(
+                    child: Text(
+                      "No images yet.",
+                      style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.height * 0.03,
+                      ),
+                    ),
+                  );
                 }
                 final List<appimg.Image> images = collection.images!;
                 images.sort(

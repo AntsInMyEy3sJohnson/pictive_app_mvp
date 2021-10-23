@@ -33,6 +33,7 @@ dependencies:
   image_picker: ^0.8.2 # For letting the user import images into the app
   json_annotation: ^4.0.0 # Provides annotations that support working with JSON data
   json_serializable: ^4.1.4 # Necessary for working with JSON data sent over the wire
+  photo_view: ^0.13.0 # Used to display images in scope of ImageDetailPage
 
 dev_dependencies:
   flutter_test:

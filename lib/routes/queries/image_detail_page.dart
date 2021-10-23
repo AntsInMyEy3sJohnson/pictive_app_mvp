@@ -5,6 +5,7 @@ import 'package:graphql/client.dart';
 import 'package:pictive_app_mvp/data/image/image.dart' as appimg;
 import 'package:pictive_app_mvp/data/image/image_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
+import 'package:photo_view/photo_view.dart';
 
 class ImageDetailPage extends StatefulWidget {
   static const String routeID = "/imagedetail";
@@ -38,26 +39,32 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _populateImageFuture,
-      builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
-        if (snapshot.connectionState == ConnectionState.none ||
-            snapshot.connectionState == ConnectionState.waiting) {
-          // TODO Make this more beautiful -- looks very ugly without a surrounding Scaffold
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return const Icon(Icons.error);
-        }
-        final appimg.Image image = _extractImageBag(snapshot.data!).images![0];
-        return InteractiveViewer(
-          child: Image.memory(base64.decode(image.content!)),
-        );
-      },
+    return Scaffold(
+      body: Center(
+        child: FutureBuilder(
+          future: _populateImageFuture,
+          builder: (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
+            if (snapshot.connectionState == ConnectionState.none ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              // TODO Make this more beautiful -- looks very ugly without a surrounding Scaffold
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return const Icon(Icons.error);
+            }
+            final appimg.Image image =
+                _extractImageBag(snapshot.data!).images![0];
+            return PhotoView(
+              imageProvider: MemoryImage(base64.decode(image.content!)),
+            );
+          },
+        ),
+      ),
     );
   }
 
   ImageBag _extractImageBag(QueryResult queryResult) {
-    return ImageBag.fromJson(queryResult.data!['getImageByID'] as Map<String, dynamic>);
+    return ImageBag.fromJson(
+        queryResult.data!['getImageByID'] as Map<String, dynamic>);
   }
 
   Future<QueryResult> _performQuery() {
