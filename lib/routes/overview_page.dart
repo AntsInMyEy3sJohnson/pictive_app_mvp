@@ -101,6 +101,10 @@ class _OverviewPageState extends State<OverviewPage> {
     final String? collectionName = await const DialogHelper<String>()
         .show(context, const CreateNewCollectionDialog());
     if (collectionName != null) {
+      if (!mounted) {
+        debugPrint("Unmounted -- returning.");
+        return;
+      }
       final QueryResult queryResult = await LoadingOverlay.of(context).during(
         GClientWrapper.getInstance().performMutation(
           _createCollectionMutation(),
@@ -155,6 +159,10 @@ class _OverviewPageState extends State<OverviewPage> {
         debugPrint("Received null list of images from image picker.");
         return;
       }
+      if (!mounted) {
+        debugPrint("Unmounted -- returning.");
+        return;
+      }
       await LoadingOverlay.of(context).during(
         _uploadImagesToCollection(evaluateTargetCollection(), xfiles),
       );
@@ -169,6 +177,10 @@ class _OverviewPageState extends State<OverviewPage> {
           await _imagePicker.pickImage(source: ImageSource.camera);
       if (xfile == null) {
         debugPrint("Received null image from image picker.");
+        return;
+      }
+      if (!mounted) {
+        debugPrint("Unmounted -- returning.");
         return;
       }
       await LoadingOverlay.of(context).during(

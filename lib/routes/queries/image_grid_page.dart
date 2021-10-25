@@ -112,6 +112,10 @@ class _ImageGridPageState extends State<ImageGridPage> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => debugPrint("Hi"),
+        child: const Icon(Icons.photo),
+      ),
     );
   }
 

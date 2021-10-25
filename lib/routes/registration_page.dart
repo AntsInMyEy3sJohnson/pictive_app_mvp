@@ -209,6 +209,10 @@ class _RegisterUserState extends State<_RegisterUser> {
         ],
       ),
     );
+    if (!mounted) {
+      debugPrint("Unmounted -- returning.");
+      return;
+    }
     Navigator.pushReplacementNamed(context, LoginPage.routeID);
   }
 }

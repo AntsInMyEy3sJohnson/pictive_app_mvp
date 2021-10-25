@@ -182,6 +182,10 @@ class _PopulateCollectionState extends State<PopulateCollection> {
     );
     final Collection refreshedCollection =
         _extractCollectionBag(getCollectionByIdResult).collections![0];
+    if (!mounted) {
+      debugPrint("Unmounted -- returning.");
+      return;
+    }
     final List<bool> shouldDeleteCollection =
         await const DialogHelper<List<bool>?>().show(
               context,
@@ -196,6 +200,10 @@ class _PopulateCollectionState extends State<PopulateCollection> {
             [];
     if (shouldDeleteCollection.isNotEmpty && shouldDeleteCollection[0]) {
       debugPrint("${shouldDeleteCollection[0]}, ${shouldDeleteCollection[1]}");
+      if (!mounted) {
+        debugPrint("Unmounted -- returning.");
+        return;
+      }
       final QueryResult deleteCollectionResult =
           await LoadingOverlay.of(context).during(
         _performDeleteCollectionByIdMutation(shouldDeleteCollection[1]),
