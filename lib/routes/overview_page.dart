@@ -1,12 +1,11 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
-import 'package:image/image.dart' as image_lib;
 import 'package:image_picker/image_picker.dart';
 import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
 import 'package:pictive_app_mvp/graphql/g_client_wrapper.dart';
+import 'package:pictive_app_mvp/graphql/image_mutation_helper.dart';
 import 'package:pictive_app_mvp/state/app/app_bloc.dart';
 import 'package:pictive_app_mvp/state/app/events/collection_created.dart';
 import 'package:pictive_app_mvp/state/app/events/images_added_to_collection.dart';
@@ -26,10 +25,6 @@ class OverviewPage extends StatefulWidget {
 }
 
 class _OverviewPageState extends State<OverviewPage> {
-  static const String _imageThumbnailStartMarker = "THUMBNAIL_START";
-  static const String _imageThumbnailEndMarker = "THUMBNAIL_END";
-  static const String _imageContentStartMarker = "CONTENT_START";
-  static const String _imageContentEndMarker = "CONTENT_END";
 
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -163,9 +158,9 @@ class _OverviewPageState extends State<OverviewPage> {
         debugPrint("Unmounted -- returning.");
         return;
       }
-      await LoadingOverlay.of(context).during(
-        _uploadImagesToCollection(evaluateTargetCollection(), xfiles),
-      );
+      final String userID = _userBloc.state.id!;
+      final String collectionID = evaluateTargetCollection();
+      _handleImageUpload(userID, collectionID, xfiles);
     } catch (e) {
       debugPrint("Error while attempting to pick images: $e");
     }
@@ -183,28 +178,12 @@ class _OverviewPageState extends State<OverviewPage> {
         debugPrint("Unmounted -- returning.");
         return;
       }
-      await LoadingOverlay.of(context).during(
-        _uploadImagesToCollection(evaluateTargetCollection(), [xfile]),
-      );
+      final String userID = _userBloc.state.id!;
+      final String collectionID = evaluateTargetCollection();
+      _handleImageUpload(userID, collectionID, [xfile]);
     } catch (e) {
       debugPrint("An error occurred while attempting to take a picture: $e");
     }
-  }
-
-  Future<void> _uploadImagesToCollection(
-    String collectionID,
-    List<XFile> xfiles,
-  ) async {
-    final List<String> base64Payloads = await _generateBase64Payloads(xfiles);
-    _processUploadResult(
-      collectionID,
-      await GClientWrapper.getInstance()
-          .performMutation(_uploadImagesMutation(), <String, dynamic>{
-        'ownerID': _userBloc.state.id,
-        'collectionID': collectionID,
-        'base64Payloads': base64Payloads,
-      }),
-    );
   }
 
   String evaluateTargetCollection() {
@@ -212,30 +191,17 @@ class _OverviewPageState extends State<OverviewPage> {
         _userBloc.state.defaultCollection!.id!;
   }
 
-  Future<List<String>> _generateBase64Payloads(List<XFile> xfiles) async {
-    final List<String> base64Payloads = List.empty(growable: true);
-    for (final XFile xfile in xfiles) {
-      final image_lib.Image? image =
-          image_lib.decodeImage(await xfile.readAsBytes());
-      if (image == null) {
-        // TODO Add logging
-        debugPrint("Unknown error while processing image.");
-        return base64Payloads;
-      }
-      final String imageThumbnailBase64 =
-          _imageToBase64EncodedPng(image_lib.copyResize(image, width: 120));
-      final String imageContentBase64 = _imageToBase64EncodedPng(image);
-      final String payload =
-          "$_imageThumbnailStartMarker:$imageThumbnailBase64:$_imageThumbnailEndMarker"
-          "$_imageContentStartMarker:$imageContentBase64:$_imageContentEndMarker";
-      base64Payloads.add(payload);
-    }
-    return base64Payloads;
-  }
-
-  String _imageToBase64EncodedPng(image_lib.Image image) {
-    final List<int> ints = image_lib.encodePng(image);
-    return base64.encode(ints);
+  Future<void> _handleImageUpload(String userID, String collectionID, List<XFile> xfiles) async {
+    final String userID = _userBloc.state.id!;
+    final String collectionID = evaluateTargetCollection();
+    final Future<QueryResult> uploadResultFuture =
+    ImageMutationHelper.getInstance().uploadImagesToCollection(
+      userID,
+      collectionID,
+      xfiles,
+    );
+    final QueryResult uploadResult = await LoadingOverlay.of(context).during(uploadResultFuture);
+    _processUploadResult(collectionID, uploadResult);
   }
 
   void _processUploadResult(String collectionID, QueryResult queryResult) {
@@ -271,17 +237,4 @@ class _OverviewPageState extends State<OverviewPage> {
     ''';
   }
 
-  String _uploadImagesMutation() {
-    return r'''
-    mutation UploadImages($ownerID: ID!, $collectionID: ID!, $base64Payloads: [String!]!) {
-      uploadImages(ownerID: $ownerID, collectionID: $collectionID, base64Payloads: $base64Payloads) {
-        images {
-          id
-          thumbnail
-          content
-        }
-      }
-    }
-    ''';
-  }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pictive_app_mvp/data/collection/collection.dart';
 import 'package:pictive_app_mvp/data/collection/collection_bag.dart';
 import 'package:pictive_app_mvp/data/image/image.dart' as appimg;
@@ -39,11 +40,13 @@ class _ImageGridPageState extends State<ImageGridPage> {
      }
   ''';
 
+  late final ImagePicker _imagePicker;
   late Future<QueryResult> _populateImagesFuture;
 
   @override
   void initState() {
     super.initState();
+    _imagePicker = ImagePicker();
     _populateImagesFuture = _performQuery();
   }
 
@@ -113,10 +116,30 @@ class _ImageGridPageState extends State<ImageGridPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => debugPrint("Hi"),
+        onPressed: _processTakePictureButtonPressed,
         child: const Icon(Icons.photo),
       ),
     );
+  }
+
+  Future<void> _processTakePictureButtonPressed() async {
+    try {
+      final XFile? xfile =
+      await _imagePicker.pickImage(source: ImageSource.camera);
+      if (xfile == null) {
+        debugPrint("Received null image from image picker.");
+        return;
+      }
+      if (!mounted) {
+        debugPrint("Unmounted -- returning.");
+        return;
+      }
+      // TODO Read owner ID from user bloc
+      const String userID = "";
+      final String collectionID = widget.collectionID;
+    } catch (e) {
+      debugPrint("An error occurred while attempting to take a picture: $e");
+    }
   }
 
   void _processImageTapped(String id) {
