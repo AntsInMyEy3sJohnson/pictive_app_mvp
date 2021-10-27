@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
@@ -25,7 +24,6 @@ class OverviewPage extends StatefulWidget {
 }
 
 class _OverviewPageState extends State<OverviewPage> {
-
   final ImagePicker _imagePicker = ImagePicker();
 
   late final UserBloc _userBloc;
@@ -68,25 +66,21 @@ class _OverviewPageState extends State<OverviewPage> {
             heroTag: "createNewCollectionFab",
             child: const Icon(Icons.collections),
           ),
-          const Flexible(
-            child: FractionallySizedBox(widthFactor: 0.02),
-          ),
+          const Flexible(child: FractionallySizedBox(widthFactor: 0.02)),
           FloatingActionButton(
             tooltip: "Select images from your gallery",
             onPressed: _processSelectImagesButtonPressed,
-            heroTag: "pickMultiImageFromGalleryFab",
+            heroTag: "pickMultiImageFromGalleryFabImageGridPage",
             child: const Icon(Icons.photo),
           ),
           const Flexible(child: FractionallySizedBox(widthFactor: 0.02)),
           FloatingActionButton(
             tooltip: "Take a picture with your phone's camera",
             onPressed: _processTakePictureButtonPressed,
-            heroTag: "takePicturesWithCameraFab",
+            heroTag: "takePicturesWithCameraFabOverviewPage",
             child: const Icon(Icons.camera_alt),
           ),
-          const Flexible(
-            child: FractionallySizedBox(widthFactor: 0.06),
-          ),
+          const Flexible(child: FractionallySizedBox(widthFactor: 0.06)),
         ],
       ),
     );
@@ -191,16 +185,20 @@ class _OverviewPageState extends State<OverviewPage> {
         _userBloc.state.defaultCollection!.id!;
   }
 
-  Future<void> _handleImageUpload(String userID, String collectionID, List<XFile> xfiles) async {
+  Future<void> _handleImageUpload(
+    String userID,
+    String collectionID,
+    List<XFile> xfiles,
+  ) async {
     final String userID = _userBloc.state.id!;
-    final String collectionID = evaluateTargetCollection();
     final Future<QueryResult> uploadResultFuture =
-    ImageMutationHelper.getInstance().uploadImagesToCollection(
+        ImageMutationHelper.getInstance().uploadImagesToCollection(
       userID,
       collectionID,
       xfiles,
     );
-    final QueryResult uploadResult = await LoadingOverlay.of(context).during(uploadResultFuture);
+    final QueryResult uploadResult =
+        await LoadingOverlay.of(context).during(uploadResultFuture);
     _processUploadResult(collectionID, uploadResult);
   }
 
@@ -236,5 +234,4 @@ class _OverviewPageState extends State<OverviewPage> {
     }  
     ''';
   }
-
 }

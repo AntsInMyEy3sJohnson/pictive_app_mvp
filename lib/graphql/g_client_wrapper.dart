@@ -6,7 +6,7 @@ class GClientWrapper {
 
   GClientWrapper._() {
     _graphQLClient = GraphQLClient(
-      link: HttpLink("http://192.168.8.130:30080/graphql"),
+      link: HttpLink("http://192.168.8.132:30080/graphql"),
       cache: GraphQLCache(),
     );
   }
