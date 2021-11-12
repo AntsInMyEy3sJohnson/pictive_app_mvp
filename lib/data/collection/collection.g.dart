@@ -13,7 +13,7 @@ Collection _$CollectionFromJson(Map<String, dynamic> json) {
     ..images = (json['images'] as List<dynamic>?)
         ?.map((e) => Image.fromJson(e as Map<String, dynamic>))
         .toList()
-    ..sharedWith = (json['sharedWith'] as List<dynamic>?)
+    ..sourcedBy = (json['sourcedBy'] as List<dynamic>?)
         ?.map((e) => User.fromJson(e as Map<String, dynamic>))
         .toList()
     ..owner = json['owner'] == null
@@ -31,7 +31,7 @@ Map<String, dynamic> _$CollectionToJson(Collection instance) =>
       'id': instance.id,
       'defaultCollection': instance.defaultCollection,
       'images': instance.images,
-      'sharedWith': instance.sharedWith,
+      'sourcedBy': instance.sourcedBy,
       'owner': instance.owner,
       'displayName': instance.displayName,
       'pin': instance.pin,

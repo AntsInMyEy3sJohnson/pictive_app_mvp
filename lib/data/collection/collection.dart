@@ -10,7 +10,7 @@ class Collection extends Equatable {
   String? id;
   bool? defaultCollection;
   List<Image>? images;
-  List<User>? sharedWith;
+  List<User>? sourcedBy;
   User? owner;
   String? displayName;
   int? pin;

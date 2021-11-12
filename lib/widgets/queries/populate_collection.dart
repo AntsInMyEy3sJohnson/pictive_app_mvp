@@ -37,7 +37,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
           images {
             id
           }
-          sharedWith {
+          sourcedBy {
             id
           }
         }
@@ -194,7 +194,7 @@ class _PopulateCollectionState extends State<PopulateCollection> {
                 refreshedCollection.images?.length ?? 0,
                 // List of users a collection is shared with must always
                 // contain at least one user, namely, the collection owner
-                refreshedCollection.sharedWith!.length,
+                refreshedCollection.sourcedBy!.length,
               ),
             ) ??
             [];

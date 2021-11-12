@@ -141,7 +141,7 @@ class _RegisterUserState extends State<_RegisterUser> {
           ownedCollections {
             id
           }
-          sharedCollections {
+          sourcedCollections {
             id
           }
           defaultCollection {

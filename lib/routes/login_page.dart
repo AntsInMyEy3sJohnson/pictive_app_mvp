@@ -137,7 +137,7 @@ class _LogInUserState extends State<_LogInUser> {
           ownedCollections {
             id
           }
-          sharedCollections {
+          sourcedCollections {
             id
             defaultCollection
           }
@@ -201,7 +201,7 @@ class _LogInUserState extends State<_LogInUser> {
     _userBloc.add(UserLoggedIn(user));
     _appBloc.add(
       CollectionsRetrieved(
-        user.sharedCollections!.map((e) => e.id!).toList(),
+        user.sourcedCollections!.map((e) => e.id!).toList(),
         user.defaultCollection!.id!,
       ),
     );

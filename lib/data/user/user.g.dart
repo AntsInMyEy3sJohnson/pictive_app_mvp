@@ -13,7 +13,7 @@ User _$UserFromJson(Map<String, dynamic> json) {
     ..ownedCollections = (json['ownedCollections'] as List<dynamic>?)
         ?.map((e) => Collection.fromJson(e as Map<String, dynamic>))
         .toList()
-    ..sharedCollections = (json['sharedCollections'] as List<dynamic>?)
+    ..sourcedCollections = (json['sourcedCollections'] as List<dynamic>?)
         ?.map((e) => Collection.fromJson(e as Map<String, dynamic>))
         .toList()
     ..defaultCollection = json['defaultCollection'] == null
@@ -28,7 +28,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'id': instance.id,
       'mail': instance.mail,
       'ownedCollections': instance.ownedCollections,
-      'sharedCollections': instance.sharedCollections,
+      'sourcedCollections': instance.sourcedCollections,
       'defaultCollection': instance.defaultCollection,
       'ownedImages': instance.ownedImages,
     };

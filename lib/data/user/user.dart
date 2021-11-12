@@ -10,7 +10,7 @@ class User extends Equatable {
   String? id;
   String? mail;
   List<Collection>? ownedCollections;
-  List<Collection>? sharedCollections;
+  List<Collection>? sourcedCollections;
   Collection? defaultCollection;
   List<Image>? ownedImages;
 

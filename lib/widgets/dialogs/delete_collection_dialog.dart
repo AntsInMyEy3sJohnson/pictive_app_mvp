@@ -5,12 +5,12 @@ import 'package:pictive_app_mvp/widgets/sizable_text_field.dart';
 class DeleteCollectionDialog extends StatefulWidget {
   final String collectionName;
   final int numImages;
-  final int numSharedWith;
+  final int numSourcedBy;
 
   const DeleteCollectionDialog(
     this.collectionName,
     this.numImages,
-    this.numSharedWith,
+    this.numSourcedBy,
   );
 
   @override
@@ -58,9 +58,9 @@ class _DeleteCollectionDialogState extends State<DeleteCollectionDialog> {
                 0.037,
               ),
             ),
-          if (widget.numSharedWith > 1)
+          if (widget.numSourcedBy > 1)
             SizableTextField(
-              "Caution! This collection is shared with ${widget.numSharedWith - 1} other users. They will lose access to this collection!",
+              "Caution! This collection is shared with ${widget.numSourcedBy - 1} other users. They will lose access to this collection!",
               _infoTextSizeWidthModifier,
             ),
           ButtonBar(
