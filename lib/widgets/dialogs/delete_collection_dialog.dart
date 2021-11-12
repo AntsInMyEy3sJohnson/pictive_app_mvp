@@ -60,7 +60,7 @@ class _DeleteCollectionDialogState extends State<DeleteCollectionDialog> {
             ),
           if (widget.numSourcedBy > 1)
             SizableTextField(
-              "Caution! This collection is shared with ${widget.numSourcedBy - 1} other users. They will lose access to this collection!",
+              "Caution! This collection was sourced by ${widget.numSourcedBy - 1} other users. They will lose access to this collection!",
               _infoTextSizeWidthModifier,
             ),
           ButtonBar(

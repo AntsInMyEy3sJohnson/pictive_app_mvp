@@ -14,7 +14,7 @@ class Collection extends Equatable {
   User? owner;
   String? displayName;
   int? pin;
-  bool? nonOwnersCanShare;
+  bool? sourcingAllowed;
   bool? nonOwnersCanWrite;
   String? creationTimestamp;
 

@@ -21,7 +21,7 @@ Collection _$CollectionFromJson(Map<String, dynamic> json) {
         : User.fromJson(json['owner'] as Map<String, dynamic>)
     ..displayName = json['displayName'] as String?
     ..pin = json['pin'] as int?
-    ..nonOwnersCanShare = json['nonOwnersCanShare'] as bool?
+    ..sourcingAllowed = json['sourcingAllowed'] as bool?
     ..nonOwnersCanWrite = json['nonOwnersCanWrite'] as bool?
     ..creationTimestamp = json['creationTimestamp'] as String?;
 }
@@ -35,7 +35,7 @@ Map<String, dynamic> _$CollectionToJson(Collection instance) =>
       'owner': instance.owner,
       'displayName': instance.displayName,
       'pin': instance.pin,
-      'nonOwnersCanShare': instance.nonOwnersCanShare,
+      'sourcingAllowed': instance.sourcingAllowed,
       'nonOwnersCanWrite': instance.nonOwnersCanWrite,
       'creationTimestamp': instance.creationTimestamp,
     };

@@ -101,7 +101,8 @@ class _OverviewPageState extends State<OverviewPage> {
             'ownerID': _userBloc.state.id,
             'displayName': collectionName,
             'pin': 0000,
-            'nonOwnersCanShare': false,
+            // TODO Extend collection creation dialog to ask user for pin and whether or not sourcing is allowed
+            'sourcingAllowed': false,
             'nonOwnersCanWrite': false,
           },
         ),
@@ -224,8 +225,8 @@ class _OverviewPageState extends State<OverviewPage> {
 
   String _createCollectionMutation() {
     return r'''
-    mutation CreateCollection($ownerID: ID!, $displayName: String!, $pin: Int!, $nonOwnersCanShare: Boolean!, $nonOwnersCanWrite: Boolean!){
-      createCollection(ownerID: $ownerID, displayName: $displayName, pin: $pin, nonOwnersCanShare: $nonOwnersCanShare, nonOwnersCanWrite: $nonOwnersCanWrite) {
+    mutation CreateCollection($ownerID: ID!, $displayName: String!, $pin: Int!, $sourcingAllowed: Boolean!, $nonOwnersCanWrite: Boolean!){
+      createCollection(ownerID: $ownerID, displayName: $displayName, pin: $pin, sourcingAllowed: $sourcingAllowed, nonOwnersCanWrite: $nonOwnersCanWrite) {
         collections {
           id
           displayName
